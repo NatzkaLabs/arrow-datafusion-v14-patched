@@ -230,9 +230,8 @@ pub(crate) fn add_to_row(
             sum_row!(index, accessor, rhs, i64)
         }
         _ => {
-            let msg = format!(
-                "Row sum updater is not expected to receive a scalar {s:?}"
-            );
+            let msg =
+                format!("Row sum updater is not expected to receive a scalar {s:?}");
             return Err(DataFusionError::Internal(msg));
         }
     }

@@ -2885,9 +2885,7 @@ fn parse_sql_number(n: &str) -> Result<Expr> {
         // if parsing as i64 fails try f64
         .or_else(|_| n.parse::<f64>().map(lit))
         .map_err(|_| {
-            DataFusionError::from(ParserError(format!(
-                "Cannot parse {n} as i64 or f64"
-            )))
+            DataFusionError::from(ParserError(format!("Cannot parse {n} as i64 or f64")))
         })
 }
 

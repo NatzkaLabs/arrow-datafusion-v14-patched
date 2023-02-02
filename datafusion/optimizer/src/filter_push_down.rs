@@ -98,7 +98,7 @@ fn get_predicates<'a>(
                     .collect::<HashSet<_>>()
                     .is_empty()
         })
-        .map(|(a,b)| (a, b))
+        .map(|(a, b)| (a, b))
         .unzip()
 }
 

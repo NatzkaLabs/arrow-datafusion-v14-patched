@@ -533,7 +533,9 @@ macro_rules! get_sign {
 
 #[inline]
 pub fn date32_add(days: i32, scalar: &ScalarValue, sign: i32) -> Result<i32> {
-    let epoch = NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(DataFusionError::Internal("Couldn't convert date combination to NaiveDate".to_string()))?;
+    let epoch = NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(DataFusionError::Internal(
+        "Couldn't convert date combination to NaiveDate".to_string(),
+    ))?;
     let prior = epoch.add(Duration::days(days as i64));
     let posterior = do_date_math(prior, scalar, sign)?;
     Ok(posterior.sub(epoch).num_days() as i32)
@@ -541,7 +543,9 @@ pub fn date32_add(days: i32, scalar: &ScalarValue, sign: i32) -> Result<i32> {
 
 #[inline]
 pub fn date64_add(ms: i64, scalar: &ScalarValue, sign: i32) -> Result<i64> {
-    let epoch = NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(DataFusionError::Internal("Couldn't convert date combination to NaiveDate".to_string()))?;
+    let epoch = NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(DataFusionError::Internal(
+        "Couldn't convert date combination to NaiveDate".to_string(),
+    ))?;
     let prior = epoch.add(Duration::milliseconds(ms));
     let posterior = do_date_math(prior, scalar, sign)?;
     Ok(posterior.sub(epoch).num_milliseconds())
@@ -580,7 +584,11 @@ fn do_date_time_math(
     scalar: &ScalarValue,
     sign: i32,
 ) -> Result<NaiveDateTime> {
-    let prior = NaiveDateTime::from_timestamp_opt(secs, nsecs).ok_or(DataFusionError::Internal("Couldn't convert timestamp combination to NaiveDateTime".to_string()))?;
+    let prior = NaiveDateTime::from_timestamp_opt(secs, nsecs).ok_or(
+        DataFusionError::Internal(
+            "Couldn't convert timestamp combination to NaiveDateTime".to_string(),
+        ),
+    )?;
     do_date_math(prior, scalar, sign)
 }
 
@@ -2537,7 +2545,7 @@ impl fmt::Debug for ScalarValue {
                 write!(f, "TimestampMillisecond({self}, {tz_opt:?})")
             }
             ScalarValue::TimestampMicrosecond(_, tz_opt) => {
-                write!(f, "TimestampMicrosecond({self}, {tz_opt:?})" )
+                write!(f, "TimestampMicrosecond({self}, {tz_opt:?})")
             }
             ScalarValue::TimestampNanosecond(_, tz_opt) => {
                 write!(f, "TimestampNanosecond({self}, {tz_opt:?})")

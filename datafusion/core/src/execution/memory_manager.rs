@@ -309,9 +309,7 @@ impl MemoryManager {
                     }
                 });
         update.unwrap_or_else(|_| {
-            panic!(
-                "Tracker total memory shrink by {delta} underflow, current value is "                
-            )
+            panic!("Tracker total memory shrink by {delta} underflow, current value is ")
         });
     }
 

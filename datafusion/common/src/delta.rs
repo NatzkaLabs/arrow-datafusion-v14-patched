@@ -107,36 +107,120 @@ mod tests {
     fn test_shift_months() {
         let base = NaiveDate::from_ymd_opt(2020, 1, 31).unwrap();
 
-        assert_eq!(shift_months(base, 0), NaiveDate::from_ymd_opt(2020, 1, 31).unwrap());
-        assert_eq!(shift_months(base, 1), NaiveDate::from_ymd_opt(2020, 2, 29).unwrap());
-        assert_eq!(shift_months(base, 2), NaiveDate::from_ymd_opt(2020, 3, 31).unwrap());
-        assert_eq!(shift_months(base, 3), NaiveDate::from_ymd_opt(2020, 4, 30).unwrap());
-        assert_eq!(shift_months(base, 4), NaiveDate::from_ymd_opt(2020, 5, 31).unwrap());
-        assert_eq!(shift_months(base, 5), NaiveDate::from_ymd_opt(2020, 6, 30).unwrap());
-        assert_eq!(shift_months(base, 6), NaiveDate::from_ymd_opt(2020, 7, 31).unwrap());
-        assert_eq!(shift_months(base, 7), NaiveDate::from_ymd_opt(2020, 8, 31).unwrap());
-        assert_eq!(shift_months(base, 8), NaiveDate::from_ymd_opt(2020, 9, 30).unwrap());
-        assert_eq!(shift_months(base, 9), NaiveDate::from_ymd_opt(2020, 10, 31).unwrap());
-        assert_eq!(shift_months(base, 10), NaiveDate::from_ymd_opt(2020, 11, 30).unwrap());
-        assert_eq!(shift_months(base, 11), NaiveDate::from_ymd_opt(2020, 12, 31).unwrap());
-        assert_eq!(shift_months(base, 12), NaiveDate::from_ymd_opt(2021, 1, 31).unwrap());
-        assert_eq!(shift_months(base, 13), NaiveDate::from_ymd_opt(2021, 2, 28).unwrap());
+        assert_eq!(
+            shift_months(base, 0),
+            NaiveDate::from_ymd_opt(2020, 1, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 1),
+            NaiveDate::from_ymd_opt(2020, 2, 29).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 2),
+            NaiveDate::from_ymd_opt(2020, 3, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 3),
+            NaiveDate::from_ymd_opt(2020, 4, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 4),
+            NaiveDate::from_ymd_opt(2020, 5, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 5),
+            NaiveDate::from_ymd_opt(2020, 6, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 6),
+            NaiveDate::from_ymd_opt(2020, 7, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 7),
+            NaiveDate::from_ymd_opt(2020, 8, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 8),
+            NaiveDate::from_ymd_opt(2020, 9, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 9),
+            NaiveDate::from_ymd_opt(2020, 10, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 10),
+            NaiveDate::from_ymd_opt(2020, 11, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 11),
+            NaiveDate::from_ymd_opt(2020, 12, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 12),
+            NaiveDate::from_ymd_opt(2021, 1, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 13),
+            NaiveDate::from_ymd_opt(2021, 2, 28).unwrap()
+        );
 
-        assert_eq!(shift_months(base, -1), NaiveDate::from_ymd_opt(2019, 12, 31).unwrap());
-        assert_eq!(shift_months(base, -2), NaiveDate::from_ymd_opt(2019, 11, 30).unwrap());
-        assert_eq!(shift_months(base, -3), NaiveDate::from_ymd_opt(2019, 10, 31).unwrap());
-        assert_eq!(shift_months(base, -4), NaiveDate::from_ymd_opt(2019, 9, 30).unwrap());
-        assert_eq!(shift_months(base, -5), NaiveDate::from_ymd_opt(2019, 8, 31).unwrap());
-        assert_eq!(shift_months(base, -6), NaiveDate::from_ymd_opt(2019, 7, 31).unwrap());
-        assert_eq!(shift_months(base, -7), NaiveDate::from_ymd_opt(2019, 6, 30).unwrap());
-        assert_eq!(shift_months(base, -8), NaiveDate::from_ymd_opt(2019, 5, 31).unwrap());
-        assert_eq!(shift_months(base, -9), NaiveDate::from_ymd_opt(2019, 4, 30).unwrap());
-        assert_eq!(shift_months(base, -10), NaiveDate::from_ymd_opt(2019, 3, 31).unwrap());
-        assert_eq!(shift_months(base, -11), NaiveDate::from_ymd_opt(2019, 2, 28).unwrap());
-        assert_eq!(shift_months(base, -12), NaiveDate::from_ymd_opt(2019, 1, 31).unwrap());
-        assert_eq!(shift_months(base, -13), NaiveDate::from_ymd_opt(2018, 12, 31).unwrap());
+        assert_eq!(
+            shift_months(base, -1),
+            NaiveDate::from_ymd_opt(2019, 12, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -2),
+            NaiveDate::from_ymd_opt(2019, 11, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -3),
+            NaiveDate::from_ymd_opt(2019, 10, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -4),
+            NaiveDate::from_ymd_opt(2019, 9, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -5),
+            NaiveDate::from_ymd_opt(2019, 8, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -6),
+            NaiveDate::from_ymd_opt(2019, 7, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -7),
+            NaiveDate::from_ymd_opt(2019, 6, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -8),
+            NaiveDate::from_ymd_opt(2019, 5, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -9),
+            NaiveDate::from_ymd_opt(2019, 4, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -10),
+            NaiveDate::from_ymd_opt(2019, 3, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -11),
+            NaiveDate::from_ymd_opt(2019, 2, 28).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -12),
+            NaiveDate::from_ymd_opt(2019, 1, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -13),
+            NaiveDate::from_ymd_opt(2018, 12, 31).unwrap()
+        );
 
-        assert_eq!(shift_months(base, 1265), NaiveDate::from_ymd_opt(2125, 6, 30).unwrap());
+        assert_eq!(
+            shift_months(base, 1265),
+            NaiveDate::from_ymd_opt(2125, 6, 30).unwrap()
+        );
     }
 
     #[test]
@@ -144,16 +228,43 @@ mod tests {
         let base = NaiveDate::from_ymd_opt(2020, 12, 31).unwrap();
 
         assert_eq!(shift_months(base, 0), base);
-        assert_eq!(shift_months(base, 1), NaiveDate::from_ymd_opt(2021, 1, 31).unwrap());
-        assert_eq!(shift_months(base, 2), NaiveDate::from_ymd_opt(2021, 2, 28).unwrap());
-        assert_eq!(shift_months(base, 12), NaiveDate::from_ymd_opt(2021, 12, 31).unwrap());
-        assert_eq!(shift_months(base, 18), NaiveDate::from_ymd_opt(2022, 6, 30).unwrap());
+        assert_eq!(
+            shift_months(base, 1),
+            NaiveDate::from_ymd_opt(2021, 1, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 2),
+            NaiveDate::from_ymd_opt(2021, 2, 28).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 12),
+            NaiveDate::from_ymd_opt(2021, 12, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, 18),
+            NaiveDate::from_ymd_opt(2022, 6, 30).unwrap()
+        );
 
-        assert_eq!(shift_months(base, -1), NaiveDate::from_ymd_opt(2020, 11, 30).unwrap());
-        assert_eq!(shift_months(base, -2), NaiveDate::from_ymd_opt(2020, 10, 31).unwrap());
-        assert_eq!(shift_months(base, -10), NaiveDate::from_ymd_opt(2020, 2, 29).unwrap());
-        assert_eq!(shift_months(base, -12), NaiveDate::from_ymd_opt(2019, 12, 31).unwrap());
-        assert_eq!(shift_months(base, -18), NaiveDate::from_ymd_opt(2019, 6, 30).unwrap());
+        assert_eq!(
+            shift_months(base, -1),
+            NaiveDate::from_ymd_opt(2020, 11, 30).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -2),
+            NaiveDate::from_ymd_opt(2020, 10, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -10),
+            NaiveDate::from_ymd_opt(2020, 2, 29).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -12),
+            NaiveDate::from_ymd_opt(2019, 12, 31).unwrap()
+        );
+        assert_eq!(
+            shift_months(base, -18),
+            NaiveDate::from_ymd_opt(2019, 6, 30).unwrap()
+        );
     }
 
     #[test]

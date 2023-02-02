@@ -100,11 +100,9 @@ impl AggregateExpr for ApproxDistinct {
             DataType::LargeUtf8 => Box::new(StringHLLAccumulator::<i64>::new()),
             DataType::Binary => Box::new(BinaryHLLAccumulator::<i32>::new()),
             DataType::LargeBinary => Box::new(BinaryHLLAccumulator::<i64>::new()),
-            other => {
-                return Err(DataFusionError::NotImplemented(format!(
-                    "Support for 'approx_distinct' for data type {other} is not implemented"
-                )))
-            }
+            other => return Err(DataFusionError::NotImplemented(format!(
+                "Support for 'approx_distinct' for data type {other} is not implemented"
+            ))),
         };
         Ok(accumulator)
     }
