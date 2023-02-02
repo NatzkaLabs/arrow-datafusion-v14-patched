@@ -561,6 +561,8 @@ fn temporal_coercion(lhs_type: &DataType, rhs_type: &DataType) -> Option<DataTyp
 
             Some(Timestamp(unit, tz))
         }
+        (Timestamp(_, tz), Utf8) => Some(Timestamp(TimeUnit::Nanosecond, tz.clone())),
+        (Utf8, Timestamp(_, tz)) => Some(Timestamp(TimeUnit::Nanosecond, tz.clone())),
         _ => None,
     }
 }
@@ -630,6 +632,7 @@ mod tests {
     use super::*;
     use crate::Operator;
     use arrow::datatypes::DataType;
+    use arrow::datatypes::TimeUnit;
     use datafusion_common::DataFusionError;
     use datafusion_common::Result;
 
@@ -849,6 +852,30 @@ mod tests {
             DataType::Int64,
             Operator::BitwiseAnd,
             DataType::Int64
+        );
+        test_coercion_binary_rule!(
+            DataType::Utf8,
+            DataType::Timestamp(TimeUnit::Second, None),
+            Operator::Lt,
+            DataType::Timestamp(TimeUnit::Nanosecond, None)
+        );
+        test_coercion_binary_rule!(
+            DataType::Utf8,
+            DataType::Timestamp(TimeUnit::Millisecond, None),
+            Operator::Lt,
+            DataType::Timestamp(TimeUnit::Nanosecond, None)
+        );
+        test_coercion_binary_rule!(
+            DataType::Utf8,
+            DataType::Timestamp(TimeUnit::Microsecond, None),
+            Operator::Lt,
+            DataType::Timestamp(TimeUnit::Nanosecond, None)
+        );
+        test_coercion_binary_rule!(
+            DataType::Utf8,
+            DataType::Timestamp(TimeUnit::Nanosecond, None),
+            Operator::Lt,
+            DataType::Timestamp(TimeUnit::Nanosecond, None)
         );
         Ok(())
     }
