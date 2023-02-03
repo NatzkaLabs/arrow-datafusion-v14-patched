@@ -1247,7 +1247,7 @@ pub fn make_times() -> RecordBatch {
     let names = ts_nanos
         .iter()
         .enumerate()
-        .map(|(i, _)| format!("Row {}", i))
+        .map(|(i, _)| format!("Row {i}"))
         .collect::<Vec<_>>();
 
     let arr_nanos = Time64NanosecondArray::from(ts_nanos);
