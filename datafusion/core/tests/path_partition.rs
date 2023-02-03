@@ -139,8 +139,7 @@ async fn parquet_distinct_partition_col() -> Result<()> {
 
     assert_eq!(max_limit, resulting_limit);
 
-    let sql_within_partition_boundary =
-        format!("SELECT month from t limit {min_limit}");
+    let sql_within_partition_boundary = format!("SELECT month from t limit {min_limit}");
     let resulting_limit: i64 = ctx
         .sql(sql_within_partition_boundary.as_str())
         .await?

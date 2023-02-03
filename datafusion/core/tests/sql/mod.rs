@@ -804,9 +804,7 @@ async fn execute_to_batches(ctx: &SessionContext, sql: &str) -> Vec<RecordBatch>
         .unwrap();
     let optimized_logical_schema = optimized_logical_plan.schema();
 
-    let msg = format!(
-        "Creating physical plan for '{sql}': {optimized_logical_plan:?}"
-    );
+    let msg = format!("Creating physical plan for '{sql}': {optimized_logical_plan:?}");
     let plan = ctx
         .create_physical_plan(&plan)
         .await

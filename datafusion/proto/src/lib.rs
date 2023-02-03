@@ -104,10 +104,7 @@ mod roundtrip_tests {
         let proto: protobuf::LogicalExprNode = (&initial_struct).try_into().unwrap();
         let round_trip: Expr = parse_expr(&proto, &ctx).unwrap();
 
-        assert_eq!(
-            format!("{:?}", &initial_struct),
-            format!("{round_trip:?}")
-        );
+        assert_eq!(format!("{:?}", &initial_struct), format!("{round_trip:?}"));
 
         roundtrip_json_test(&proto);
     }
@@ -130,10 +127,7 @@ mod roundtrip_tests {
             logical_plan_to_bytes_with_extension_codec(&topk_plan, &extension_codec)?;
         let logical_round_trip =
             logical_plan_from_bytes_with_extension_codec(&bytes, &ctx, &extension_codec)?;
-        assert_eq!(
-            format!("{topk_plan:?}"),
-            format!("{logical_round_trip:?}")
-        );
+        assert_eq!(format!("{topk_plan:?}"), format!("{logical_round_trip:?}"));
         Ok(())
     }
 
@@ -923,10 +917,7 @@ mod roundtrip_tests {
                 (&test_case).try_into().unwrap();
             let returned_scalar: datafusion::scalar::ScalarValue =
                 (&proto_scalar).try_into().unwrap();
-            assert_eq!(
-                format!("{:?}", &test_case),
-                format!("{returned_scalar:?}")
-            );
+            assert_eq!(format!("{:?}", &test_case), format!("{returned_scalar:?}"));
         }
     }
 

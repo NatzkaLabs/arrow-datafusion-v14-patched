@@ -99,9 +99,7 @@ fn generate_string_dictionary(
     valid_percent: f64,
 ) -> ArrayRef {
     let mut rng = thread_rng();
-    let strings: Vec<_> = (0..cardinality)
-        .map(|x| format!("{prefix}#{x}"))
-        .collect();
+    let strings: Vec<_> = (0..cardinality).map(|x| format!("{prefix}#{x}")).collect();
 
     Arc::new(DictionaryArray::<Int32Type>::from_iter((0..len).map(
         |_| {

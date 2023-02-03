@@ -80,9 +80,7 @@ fn do_benches(
 
     do_bench(
         c,
-        &format!(
-            "in_list_f32 ({array_length}, {null_percent}) IN ({in_list_length}, 0)"
-        ),
+        &format!("in_list_f32 ({array_length}, {null_percent}) IN ({in_list_length}, 0)"),
         Arc::new(values),
         &in_list,
     );
@@ -97,9 +95,7 @@ fn do_benches(
 
     do_bench(
         c,
-        &format!(
-            "in_list_i32 ({array_length}, {null_percent}) IN ({in_list_length}, 0)"
-        ),
+        &format!("in_list_i32 ({array_length}, {null_percent}) IN ({in_list_length}, 0)"),
         Arc::new(values),
         &in_list,
     )

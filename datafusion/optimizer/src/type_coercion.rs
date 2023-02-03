@@ -815,10 +815,7 @@ mod test {
         let plan =
             LogicalPlan::Projection(Projection::try_new(vec![agg_expr], empty, None)?);
         let plan = rule.optimize(&plan, &mut config)?;
-        assert_eq!(
-            "Projection: AVG(a)\n  EmptyRelation",
-            &format!("{plan:?}")
-        );
+        assert_eq!("Projection: AVG(a)\n  EmptyRelation", &format!("{plan:?}"));
         Ok(())
     }
 

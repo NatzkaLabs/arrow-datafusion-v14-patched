@@ -785,10 +785,8 @@ mod tests {
 
         for _ in 1..=100 {
             let t = TDigest::new(100);
-            let values: Vec<_> = (1..=1_000)
-                .map(f64::from)
-                .map(OrderedFloat::from)
-                .collect();
+            let values: Vec<_> =
+                (1..=1_000).map(f64::from).map(OrderedFloat::from).collect();
             let t = t.merge_unsorted_f64(values);
             digests.push(t)
         }
