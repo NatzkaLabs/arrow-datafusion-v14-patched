@@ -104,10 +104,7 @@ mod roundtrip_tests {
         let proto: protobuf::LogicalExprNode = (&initial_struct).try_into().unwrap();
         let round_trip: Expr = parse_expr(&proto, &ctx).unwrap();
 
-        assert_eq!(
-            format!("{:?}", &initial_struct),
-            format!("{:?}", round_trip)
-        );
+        assert_eq!(format!("{:?}", &initial_struct), format!("{round_trip:?}"));
 
         roundtrip_json_test(&proto);
     }
@@ -130,10 +127,7 @@ mod roundtrip_tests {
             logical_plan_to_bytes_with_extension_codec(&topk_plan, &extension_codec)?;
         let logical_round_trip =
             logical_plan_from_bytes_with_extension_codec(&bytes, &ctx, &extension_codec)?;
-        assert_eq!(
-            format!("{:?}", topk_plan),
-            format!("{:?}", logical_round_trip)
-        );
+        assert_eq!(format!("{topk_plan:?}"), format!("{logical_round_trip:?}"));
         Ok(())
     }
 
@@ -219,7 +213,7 @@ mod roundtrip_tests {
         let bytes = logical_plan_to_bytes_with_extension_codec(&scan, &codec)?;
         let logical_round_trip =
             logical_plan_from_bytes_with_extension_codec(&bytes, &ctx, &codec)?;
-        assert_eq!(format!("{:?}", scan), format!("{:?}", logical_round_trip));
+        assert_eq!(format!("{scan:?}"), format!("{logical_round_trip:?}"));
         Ok(())
     }
 
@@ -243,11 +237,11 @@ mod roundtrip_tests {
             "SELECT a, SUM(b + 1) as b_sum FROM t1 GROUP BY a ORDER BY b_sum DESC";
         let plan = ctx.sql(query).await?.to_logical_plan()?;
 
-        println!("{:?}", plan);
+        println!("{plan:?}");
 
         let bytes = logical_plan_to_bytes(&plan)?;
         let logical_round_trip = logical_plan_from_bytes(&bytes, &ctx)?;
-        assert_eq!(format!("{:?}", plan), format!("{:?}", logical_round_trip));
+        assert_eq!(format!("{plan:?}"), format!("{logical_round_trip:?}"));
 
         Ok(())
     }
@@ -271,11 +265,11 @@ mod roundtrip_tests {
         let query = "SELECT a, COUNT(DISTINCT b) as b_cd FROM t1 GROUP BY a";
         let plan = ctx.sql(query).await?.to_logical_plan()?;
 
-        println!("{:?}", plan);
+        println!("{plan:?}");
 
         let bytes = logical_plan_to_bytes(&plan)?;
         let logical_round_trip = logical_plan_from_bytes(&bytes, &ctx)?;
-        assert_eq!(format!("{:?}", plan), format!("{:?}", logical_round_trip));
+        assert_eq!(format!("{plan:?}"), format!("{logical_round_trip:?}"));
 
         Ok(())
     }
@@ -288,7 +282,7 @@ mod roundtrip_tests {
         let plan = ctx.table("t1")?.to_logical_plan()?;
         let bytes = logical_plan_to_bytes(&plan)?;
         let logical_round_trip = logical_plan_from_bytes(&bytes, &ctx)?;
-        assert_eq!(format!("{:?}", plan), format!("{:?}", logical_round_trip));
+        assert_eq!(format!("{plan:?}"), format!("{logical_round_trip:?}"));
         Ok(())
     }
 
@@ -302,7 +296,7 @@ mod roundtrip_tests {
         let plan = ctx.sql("SELECT * FROM view_t1").await?.to_logical_plan()?;
         let bytes = logical_plan_to_bytes(&plan)?;
         let logical_round_trip = logical_plan_from_bytes(&bytes, &ctx)?;
-        assert_eq!(format!("{:?}", plan), format!("{:?}", logical_round_trip));
+        assert_eq!(format!("{plan:?}"), format!("{logical_round_trip:?}"));
         Ok(())
     }
 
@@ -394,8 +388,7 @@ mod roundtrip_tests {
             if let Some((input, _)) = inputs.split_first() {
                 let proto = proto::TopKPlanProto::decode(buf).map_err(|e| {
                     DataFusionError::Internal(format!(
-                        "failed to decode logical plan: {:?}",
-                        e
+                        "failed to decode logical plan: {e:?}"
                     ))
                 })?;
 
@@ -434,8 +427,7 @@ mod roundtrip_tests {
 
                 proto.encode(buf).map_err(|e| {
                     DataFusionError::Internal(format!(
-                        "failed to encode logical plan: {:?}",
-                        e
+                        "failed to encode logical plan: {e:?}"
                     ))
                 })?;
 
@@ -542,9 +534,7 @@ mod roundtrip_tests {
                 let res: Result<ScalarValue, _> = (&proto).try_into();
                 assert!(
                     res.is_err(),
-                    "The value {:?} unexpectedly serialized without error:{:?}",
-                    test_case,
-                    res
+                    "The value {test_case:?} unexpectedly serialized without error:{res:?}"
                 );
             }
         }
@@ -718,8 +708,7 @@ mod roundtrip_tests {
             assert_eq!(
                 test_case, roundtrip,
                 "ScalarValue was not the same after round trip!\n\n\
-                        Input: {:?}\n\nRoundtrip: {:?}",
-                test_case, roundtrip
+                        Input: {test_case:?}\n\nRoundtrip: {roundtrip:?}"
             );
         }
     }
@@ -756,7 +745,7 @@ mod roundtrip_tests {
             let field = Field::new("item", test_case, true);
             let proto: super::protobuf::Field = (&field).try_into().unwrap();
             let roundtrip: Field = (&proto).try_into().unwrap();
-            assert_eq!(format!("{:?}", field), format!("{:?}", roundtrip));
+            assert_eq!(format!("{field:?}"), format!("{roundtrip:?}"));
         }
     }
 
@@ -894,7 +883,7 @@ mod roundtrip_tests {
         for test_case in test_cases.into_iter() {
             let proto: super::protobuf::ArrowType = (&test_case).try_into().unwrap();
             let roundtrip: DataType = (&proto).try_into().unwrap();
-            assert_eq!(format!("{:?}", test_case), format!("{:?}", roundtrip));
+            assert_eq!(format!("{test_case:?}"), format!("{roundtrip:?}"));
         }
     }
 
@@ -928,10 +917,7 @@ mod roundtrip_tests {
                 (&test_case).try_into().unwrap();
             let returned_scalar: datafusion::scalar::ScalarValue =
                 (&proto_scalar).try_into().unwrap();
-            assert_eq!(
-                format!("{:?}", &test_case),
-                format!("{:?}", returned_scalar)
-            );
+            assert_eq!(format!("{:?}", &test_case), format!("{returned_scalar:?}"));
         }
     }
 

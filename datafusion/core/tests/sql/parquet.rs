@@ -76,7 +76,7 @@ async fn parquet_single_nan_schema() {
     let testdata = datafusion::test_util::parquet_test_data();
     ctx.register_parquet(
         "single_nan",
-        &format!("{}/single_nan.parquet", testdata),
+        &format!("{testdata}/single_nan.parquet"),
         ParquetReadOptions::default(),
     )
     .await
@@ -100,7 +100,7 @@ async fn parquet_list_columns() {
     let testdata = datafusion::test_util::parquet_test_data();
     ctx.register_parquet(
         "list_columns",
-        &format!("{}/list_columns.parquet", testdata),
+        &format!("{testdata}/list_columns.parquet"),
         ParquetReadOptions::default(),
     )
     .await

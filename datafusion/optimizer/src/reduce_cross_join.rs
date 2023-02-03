@@ -300,8 +300,7 @@ mod tests {
 
         assert_eq!(
             expected, actual,
-            "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-            expected, actual
+            "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
         );
 
         assert_eq!(plan.schema(), optimized_plan.schema())
