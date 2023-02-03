@@ -122,7 +122,7 @@ pub fn assert_optimizer_err(
     match res {
         Ok(plan) => assert_eq!(format!("{}", plan.display_indent()), "An error"),
         Err(ref e) => {
-            let actual = format!("{}", e);
+            let actual = format!("{e}");
             if expected.is_empty() || !actual.contains(expected) {
                 assert_eq!(actual, expected)
             }

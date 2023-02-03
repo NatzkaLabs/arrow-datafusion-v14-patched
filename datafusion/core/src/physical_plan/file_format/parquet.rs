@@ -529,7 +529,7 @@ impl AsyncFileReader for ParquetFileReader {
         self.store
             .get_range(&self.meta.location, range)
             .map_err(|e| {
-                ParquetError::General(format!("AsyncChunkReader::get_bytes error: {}", e))
+                ParquetError::General(format!("AsyncChunkReader::get_bytes error: {e}"))
             })
             .boxed()
     }
@@ -550,8 +550,7 @@ impl AsyncFileReader for ParquetFileReader {
                 .await
                 .map_err(|e| {
                     ParquetError::General(format!(
-                        "AsyncChunkReader::get_byte_ranges error: {}",
-                        e
+                        "AsyncChunkReader::get_byte_ranges error: {e}"
                     ))
                 })
         }
@@ -570,8 +569,7 @@ impl AsyncFileReader for ParquetFileReader {
             .await
             .map_err(|e| {
                 ParquetError::General(format!(
-                    "AsyncChunkReader::get_metadata error: {}",
-                    e
+                    "AsyncChunkReader::get_metadata error: {e}"
                 ))
             })?;
             Ok(Arc::new(metadata))
@@ -869,7 +867,7 @@ pub async fn plan_to_parquet(
             let mut tasks = vec![];
             for i in 0..plan.output_partitioning().partition_count() {
                 let plan = plan.clone();
-                let filename = format!("part-{}.parquet", i);
+                let filename = format!("part-{i}.parquet");
                 let path = fs_path.join(&filename);
                 let file = fs::File::create(path)?;
                 let mut writer =
@@ -891,13 +889,12 @@ pub async fn plan_to_parquet(
                 .await
                 .into_iter()
                 .try_for_each(|result| {
-                    result.map_err(|e| DataFusionError::Execution(format!("{}", e)))?
+                    result.map_err(|e| DataFusionError::Execution(format!("{e}")))?
                 })?;
             Ok(())
         }
         Err(e) => Err(DataFusionError::Execution(format!(
-            "Could not create directory {}: {:?}",
-            path, e
+            "Could not create directory {path}: {e:?}"
         ))),
     }
 }
@@ -1051,7 +1048,7 @@ mod tests {
             .write_parquet(&out_dir, None)
             .await
             .expect_err("should fail because input file does not match inferred schema");
-        assert_eq!("Parquet error: Arrow: underlying Arrow error: Parser error: Error while parsing value d for column 0 at line 4", format!("{}", e));
+        assert_eq!("Parquet error: Arrow: underlying Arrow error: Parser error: Error while parsing value d for column 0 at line 4", format!("{e}"));
         Ok(())
     }
 
@@ -1538,7 +1535,7 @@ mod tests {
 
         let session_ctx = SessionContext::new();
         let testdata = crate::test_util::parquet_test_data();
-        let filename = format!("{}/alltypes_plain.parquet", testdata);
+        let filename = format!("{testdata}/alltypes_plain.parquet");
 
         let meta = local_unpartitioned_file(filename);
 
@@ -1586,7 +1583,7 @@ mod tests {
             .unwrap();
 
         let testdata = crate::test_util::parquet_test_data();
-        let filename = format!("{}/alltypes_plain.parquet", testdata);
+        let filename = format!("{testdata}/alltypes_plain.parquet");
 
         let meta = local_unpartitioned_file(filename);
 
@@ -1728,8 +1725,7 @@ mod tests {
         assert_eq!(get_value(&metrics, "pushdown_rows_filtered"), 5);
         assert!(
             get_value(&metrics, "pushdown_eval_time") > 0,
-            "no eval time in metrics: {:#?}",
-            metrics
+            "no eval time in metrics: {metrics:#?}"
         );
     }
 
@@ -1745,8 +1741,7 @@ mod tests {
             Some(v) => v.as_usize(),
             _ => {
                 panic!(
-                    "Expected metric not found. Looking for '{}' in\n\n{:#?}",
-                    metric_name, metrics
+                    "Expected metric not found. Looking for '{metric_name}' in\n\n{metrics:#?}"
                 );
             }
         }
@@ -2237,7 +2232,7 @@ mod tests {
 
         // generate a partitioned file
         for partition in 0..partition_count {
-            let filename = format!("partition-{}.{}", partition, file_extension);
+            let filename = format!("partition-{partition}.{file_extension}");
             let file_path = tmp_dir.path().join(&filename);
             let mut file = File::create(file_path)?;
 
@@ -2279,25 +2274,25 @@ mod tests {
         // register each partition as well as the top level dir
         ctx.register_parquet(
             "part0",
-            &format!("{}/part-0.parquet", out_dir),
+            &format!("{out_dir}/part-0.parquet"),
             ParquetReadOptions::default(),
         )
         .await?;
         ctx.register_parquet(
             "part1",
-            &format!("{}/part-1.parquet", out_dir),
+            &format!("{out_dir}/part-1.parquet"),
             ParquetReadOptions::default(),
         )
         .await?;
         ctx.register_parquet(
             "part2",
-            &format!("{}/part-2.parquet", out_dir),
+            &format!("{out_dir}/part-2.parquet"),
             ParquetReadOptions::default(),
         )
         .await?;
         ctx.register_parquet(
             "part3",
-            &format!("{}/part-3.parquet", out_dir),
+            &format!("{out_dir}/part-3.parquet"),
             ParquetReadOptions::default(),
         )
         .await?;

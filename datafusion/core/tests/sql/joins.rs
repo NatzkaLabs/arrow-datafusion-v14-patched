@@ -1247,7 +1247,7 @@ async fn hash_join_with_date32() -> Result<()> {
 
     // inner join on hash supported data type (Date32)
     let sql = "select * from t1 join t2 on t1.c1 = t2.c1";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1264,8 +1264,7 @@ async fn hash_join_with_date32() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     let expected = vec![
@@ -1289,7 +1288,7 @@ async fn hash_join_with_date64() -> Result<()> {
 
     // left join on hash supported data type (Date64)
     let sql = "select * from t1 left join t2 on t1.c2 = t2.c2";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1306,8 +1305,7 @@ async fn hash_join_with_date64() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     let expected = vec![
@@ -1333,7 +1331,7 @@ async fn hash_join_with_decimal() -> Result<()> {
 
     // right join on hash supported data type (Decimal)
     let sql = "select * from t1 right join t2 on t1.c3 = t2.c3";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1350,8 +1348,7 @@ async fn hash_join_with_decimal() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     let expected = vec![
@@ -1377,7 +1374,7 @@ async fn hash_join_with_dictionary() -> Result<()> {
 
     // inner join on hash supported data type (Dictionary(Box::new(DataType::Int32), Box::new(DataType::Utf8)))
     let sql = "select * from t1 join t2 on t1.c4 = t2.c4";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1394,8 +1391,7 @@ async fn hash_join_with_dictionary() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     let expected = vec![
@@ -1418,7 +1414,7 @@ async fn reduce_left_join_1() -> Result<()> {
 
     // reduce to inner join
     let sql = "select * from t1 left join t2 on t1.t1_id = t2.t2_id where t2.t2_id < 100";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1437,8 +1433,7 @@ async fn reduce_left_join_1() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1462,7 +1457,7 @@ async fn reduce_left_join_2() -> Result<()> {
 
     // reduce to inner join
     let sql = "select * from t1 left join t2 on t1.t1_id = t2.t2_id where t2.t2_int < 10 or (t1.t1_int > 2 and t2.t2_name != 'w')";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1486,8 +1481,7 @@ async fn reduce_left_join_2() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1511,7 +1505,7 @@ async fn reduce_left_join_3() -> Result<()> {
 
     // reduce subquery to inner join
     let sql = "select * from (select t1.* from t1 left join t2 on t1.t1_id = t2.t2_id where t2.t2_int < 3) t3 left join t2 on t3.t1_int = t2.t2_int where t3.t1_id < 100";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1534,8 +1528,7 @@ async fn reduce_left_join_3() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1557,7 +1550,7 @@ async fn reduce_right_join_1() -> Result<()> {
 
     // reduce to inner join
     let sql = "select * from t1 right join t2 on t1.t1_id = t2.t2_id where t1.t1_int is not null";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1575,8 +1568,7 @@ async fn reduce_right_join_1() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1600,7 +1592,7 @@ async fn reduce_right_join_2() -> Result<()> {
 
     // reduce to inner join
     let sql = "select * from t1 right join t2 on t1.t1_id = t2.t2_id where not(t1.t1_int = t2.t2_int)";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1618,8 +1610,7 @@ async fn reduce_right_join_2() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1643,7 +1634,7 @@ async fn reduce_full_join_to_right_join() -> Result<()> {
 
     // reduce to right join
     let sql = "select * from t1 full join t2 on t1.t1_id = t2.t2_id where t2.t2_name is not null";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1661,8 +1652,7 @@ async fn reduce_full_join_to_right_join() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1688,7 +1678,7 @@ async fn reduce_full_join_to_left_join() -> Result<()> {
     // reduce to left join
     let sql =
         "select * from t1 full join t2 on t1.t1_id = t2.t2_id where t1.t1_name != 'b'";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1706,8 +1696,7 @@ async fn reduce_full_join_to_left_join() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",
@@ -1730,7 +1719,7 @@ async fn reduce_full_join_to_inner_join() -> Result<()> {
 
     // reduce to inner join
     let sql = "select * from t1 full join t2 on t1.t1_id = t2.t2_id where t1.t1_name != 'b' and t2.t2_name = 'x'";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -1749,8 +1738,7 @@ async fn reduce_full_join_to_inner_join() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     let expected = vec![
         "+-------+---------+--------+-------+---------+--------+",

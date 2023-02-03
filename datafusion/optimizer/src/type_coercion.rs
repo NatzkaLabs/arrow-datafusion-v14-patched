@@ -243,24 +243,21 @@ impl ExprRewriter for TypeCoercionRewriter {
                 let low_coerced_type = comparison_coercion(&expr_type, &low_type)
                     .ok_or_else(|| {
                         DataFusionError::Internal(format!(
-                            "Failed to coerce types {} and {} in BETWEEN expression",
-                            expr_type, low_type
+                            "Failed to coerce types {expr_type} and {low_type} in BETWEEN expression"
                         ))
                     })?;
                 let high_type = high.get_type(&self.schema)?;
                 let high_coerced_type = comparison_coercion(&expr_type, &low_type)
                     .ok_or_else(|| {
                         DataFusionError::Internal(format!(
-                            "Failed to coerce types {} and {} in BETWEEN expression",
-                            expr_type, high_type
+                            "Failed to coerce types {expr_type} and {high_type} in BETWEEN expression"
                         ))
                     })?;
                 let coercion_type =
                     comparison_coercion(&low_coerced_type, &high_coerced_type)
                         .ok_or_else(|| {
                             DataFusionError::Internal(format!(
-                                "Failed to coerce types {} and {} in BETWEEN expression",
-                                expr_type, high_type
+                                "Failed to coerce types {expr_type} and {high_type} in BETWEEN expression"
                             ))
                         })?;
                 let expr = Expr::Between(Between::new(
@@ -285,8 +282,7 @@ impl ExprRewriter for TypeCoercionRewriter {
                     get_coerce_type_for_list(&expr_data_type, &list_data_types);
                 match result_type {
                     None => Err(DataFusionError::Plan(format!(
-                        "Can not find compatible types to compare {:?} with {:?}",
-                        expr_data_type, list_data_types
+                        "Can not find compatible types to compare {expr_data_type:?} with {list_data_types:?}"
                     ))),
                     Some(coerced_type) => {
                         // find the coerced type
@@ -322,8 +318,7 @@ impl ExprRewriter for TypeCoercionRewriter {
                     get_coerce_type_for_case_when(&then_types, &else_type);
                 match case_when_coerce_type {
                     None => Err(DataFusionError::Internal(format!(
-                        "Failed to coerce then ({:?}) and else ({:?}) to common types in CASE WHEN expression",
-                        then_types, else_type
+                        "Failed to coerce then ({then_types:?}) and else ({else_type:?}) to common types in CASE WHEN expression"
                     ))),
                     Some(data_type) => {
                         let left = case.when_then_expr
@@ -476,8 +471,7 @@ fn get_coerced_window_frame(
             Ok(DataType::Interval(IntervalUnit::MonthDayNano))
         } else {
             Err(DataFusionError::Internal(format!(
-                "Cannot run range queries on datatype: {:?}",
-                column_type
+                "Cannot run range queries on datatype: {column_type:?}"
             )))
         }
     }
@@ -619,7 +613,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: a < CAST(UInt32(2) AS Float64)\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -648,7 +642,7 @@ mod test {
         assert_eq!(
             "Projection: a < CAST(UInt32(2) AS Float64) OR a < CAST(UInt32(2) AS Float64)\
             \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -675,7 +669,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: TestScalarUDF(CAST(Int32(123) AS Float32))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -701,7 +695,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).err().unwrap();
         assert_eq!(
             "Plan(\"Coercion from [Utf8] to the signature Uniform(1, [Int32]) failed.\")",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -725,7 +719,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: abs(CAST(Int64(10) AS Float64))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -752,7 +746,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: MY_AVG(CAST(Int64(10) AS Float64))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -807,7 +801,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: AVG(Int64(12))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let empty = empty_with_type(DataType::Int32);
@@ -821,10 +815,7 @@ mod test {
         let plan =
             LogicalPlan::Projection(Projection::try_new(vec![agg_expr], empty, None)?);
         let plan = rule.optimize(&plan, &mut config)?;
-        assert_eq!(
-            "Projection: AVG(a)\n  EmptyRelation",
-            &format!("{:?}", plan)
-        );
+        assert_eq!("Projection: AVG(a)\n  EmptyRelation", &format!("{plan:?}"));
         Ok(())
     }
 
@@ -862,7 +853,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: CAST(Utf8(\"1998-03-18\") AS Date32) + IntervalDayTime(\"386547056640\")\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -888,7 +879,7 @@ mod test {
         assert_eq!(
             "Projection: a IN ([CAST(Int32(1) AS Int64), CAST(Int8(4) AS Int64), Int64(8)]) AS a IN (Map { iter: Iter([Int32(1), Int8(4), Int64(8)]) })\
              \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         // a in (1,4,8), a is decimal
         let expr = col("a").in_list(vec![lit(1_i32), lit(4_i8), lit(8_i64)], false);
@@ -907,7 +898,7 @@ mod test {
         assert_eq!(
             "Projection: CAST(a AS Decimal128(24, 4)) IN ([CAST(Int32(1) AS Decimal128(24, 4)), CAST(Int8(4) AS Decimal128(24, 4)), CAST(Int64(8) AS Decimal128(24, 4))]) AS a IN (Map { iter: Iter([Int32(1), Int8(4), Int64(8)]) })\
              \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -927,7 +918,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS TRUE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         let empty = empty_with_type(DataType::Int64);
         let plan = LogicalPlan::Projection(Projection::try_new(vec![expr], empty, None)?);
@@ -942,7 +933,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS NOT TRUE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         // is false
@@ -952,7 +943,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS FALSE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         // is not false
@@ -962,7 +953,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS NOT FALSE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -981,7 +972,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a LIKE Utf8(\"abc\")\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let expr = Box::new(col("a"));
@@ -996,7 +987,7 @@ mod test {
         assert_eq!(
             "Projection: a LIKE CAST(NULL AS Utf8) AS a LIKE NULL \
              \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let expr = Box::new(col("a"));
@@ -1028,7 +1019,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS UNKNOWN\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let empty = empty_with_type(DataType::Utf8);
@@ -1048,7 +1039,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS NOT UNKNOWN\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -1072,7 +1063,7 @@ mod test {
             let plan = rule.optimize(&plan, &mut config).unwrap();
             assert_eq!(
                 "Projection: concat(a, Utf8(\"b\"), CAST(Boolean(true) AS Utf8), CAST(Boolean(false) AS Utf8), CAST(Int32(13) AS Utf8))\n  EmptyRelation",
-                &format!("{:?}", plan)
+                &format!("{plan:?}")
             );
         }
 
@@ -1087,7 +1078,7 @@ mod test {
             let plan = rule.optimize(&plan, &mut config).unwrap();
             assert_eq!(
                 "Projection: concatwithseparator(Utf8(\"-\"), a, Utf8(\"b\"), CAST(Boolean(true) AS Utf8), CAST(Boolean(false) AS Utf8), CAST(Int32(13) AS Utf8))\n  EmptyRelation",
-                &format!("{:?}", plan)
+                &format!("{plan:?}")
             );
         }
 

@@ -43,13 +43,13 @@ fn case_when() -> Result<()> {
     let expected =
         "Projection: CASE WHEN test.col_int32 > Int32(0) THEN Int64(1) ELSE Int64(0) END AS CASE WHEN test.col_int32 > Int64(0) THEN Int64(1) ELSE Int64(0) END\
          \n  TableScan: test projection=[col_int32]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
 
     let sql = "SELECT CASE WHEN col_uint32 > 0 THEN 1 ELSE 0 END FROM test";
     let plan = test_sql(sql)?;
     let expected = "Projection: CASE WHEN CAST(test.col_uint32 AS Int64) > Int64(0) THEN Int64(1) ELSE Int64(0) END\
     \n  TableScan: test projection=[col_uint32]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -71,7 +71,7 @@ fn subquery_filter_with_cast() -> Result<()> {
         \n        Aggregate: groupBy=[[]], aggr=[[AVG(test.col_int32)]]\
         \n          Filter: test.col_utf8 >= Utf8(\"2002-05-08\") AND test.col_utf8 <= Utf8(\"2002-05-13\")\
         \n            TableScan: test projection=[col_int32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -82,7 +82,7 @@ fn case_when_aggregate() -> Result<()> {
     let expected = "Projection: test.col_utf8, SUM(CASE WHEN test.col_int32 > Int64(0) THEN Int64(1) ELSE Int64(0) END) AS n\
                     \n  Aggregate: groupBy=[[test.col_utf8]], aggr=[[SUM(CASE WHEN test.col_int32 > Int32(0) THEN Int64(1) ELSE Int64(0) END) AS SUM(CASE WHEN test.col_int32 > Int64(0) THEN Int64(1) ELSE Int64(0) END)]]\
                     \n    TableScan: test projection=[col_int32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -93,7 +93,7 @@ fn unsigned_target_type() -> Result<()> {
     let expected = "Projection: test.col_utf8\
                     \n  Filter: CAST(test.col_uint32 AS Int64) > Int64(0)\
                     \n    TableScan: test projection=[col_uint32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -105,7 +105,7 @@ fn distribute_by() -> Result<()> {
     let expected = "Repartition: DistributeBy(col_utf8)\
     \n  Projection: test.col_int32, test.col_utf8\
     \n    TableScan: test projection=[col_int32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -121,7 +121,7 @@ fn semi_join_with_join_filter() -> Result<()> {
                     \n    TableScan: test projection=[col_int32, col_uint32, col_utf8]\
                     \n    SubqueryAlias: t2\
                     \n      TableScan: test projection=[col_int32, col_uint32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -137,7 +137,7 @@ fn anti_join_with_join_filter() -> Result<()> {
                     \n    TableScan: test projection=[col_int32, col_uint32, col_utf8]\
                     \n    SubqueryAlias: t2\
                     \n      TableScan: test projection=[col_int32, col_uint32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -152,7 +152,7 @@ fn where_exists_distinct() -> Result<()> {
                     \n    TableScan: test projection=[col_int32]\
                     \n    SubqueryAlias: t2\
                     \n      TableScan: test projection=[col_int32]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -170,7 +170,7 @@ fn intersect() -> Result<()> {
     \n        TableScan: test projection=[col_int32, col_utf8]\
     \n      TableScan: test projection=[col_int32, col_utf8]\
     \n  TableScan: test projection=[col_int32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -183,7 +183,7 @@ fn between_date32_plus_interval() -> Result<()> {
         "Projection: COUNT(Int64(1))\n  Aggregate: groupBy=[[]], aggr=[[COUNT(Int64(1))]]\
         \n    Filter: test.col_date32 >= Date32(\"10303\") AND test.col_date32 <= Date32(\"10393\")\
         \n      TableScan: test projection=[col_date32]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -196,7 +196,7 @@ fn between_date64_plus_interval() -> Result<()> {
         "Projection: COUNT(Int64(1))\n  Aggregate: groupBy=[[]], aggr=[[COUNT(Int64(1))]]\
         \n    Filter: test.col_date64 >= Date64(\"890179200000\") AND test.col_date64 <= Date64(\"897955200000\")\
         \n      TableScan: test projection=[col_date64]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -209,7 +209,7 @@ fn concat_literals() -> Result<()> {
     let expected =
         "Projection: concat(Utf8(\"1\"), CAST(test.col_int32 AS Utf8), Utf8(\"0hello\"), test.col_utf8, Utf8(\"123.4\")) AS col\
         \n  TableScan: test projection=[col_int32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -222,7 +222,7 @@ fn concat_ws_literals() -> Result<()> {
     let expected =
         "Projection: concatwithseparator(Utf8(\"-\"), Utf8(\"1\"), CAST(test.col_int32 AS Utf8), Utf8(\"0-hello\"), test.col_utf8, Utf8(\"12--3.4\")) AS col\
         \n  TableScan: test projection=[col_int32, col_utf8]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -238,7 +238,7 @@ fn timestamp_nano_ts_none_predicates() -> Result<()> {
     let expected =
         "Projection: test.col_int32\n  Filter: CAST(test.col_ts_nano_none AS Timestamp(Nanosecond, Some(\"+00:00\"))) < TimestampNanosecond(1666612093000000000, Some(\"+00:00\"))\
          \n    TableScan: test projection=[col_int32, col_ts_nano_none]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
     Ok(())
 }
 
@@ -254,7 +254,7 @@ fn timestamp_nano_ts_utc_predicates() {
     let expected =
         "Projection: test.col_int32\n  Filter: test.col_ts_nano_utc < TimestampNanosecond(1666612093000000000, Some(\"+00:00\"))\
          \n    TableScan: test projection=[col_int32, col_ts_nano_utc]";
-    assert_eq!(expected, format!("{:?}", plan));
+    assert_eq!(expected, format!("{plan:?}"));
 }
 
 fn test_sql(sql: &str) -> Result<LogicalPlan> {
@@ -269,8 +269,10 @@ fn test_sql(sql: &str) -> Result<LogicalPlan> {
     let plan = sql_to_rel.sql_statement_to_plan(statement.clone()).unwrap();
 
     // hard code the return value of now()
-    let now_time =
-        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(1666615693, 0), Utc);
+    let now_time = DateTime::<Utc>::from_utc(
+        NaiveDateTime::from_timestamp_opt(1666615693, 0).unwrap(),
+        Utc,
+    );
     let mut config = OptimizerConfig::new()
         .with_skip_failing_rules(false)
         .with_query_execution_start_time(now_time);
