@@ -58,7 +58,7 @@ async fn single_file() {
     let file = tempdir.path().join("data.parquet");
 
     let start = Instant::now();
-    println!("Writing test data to {:?}", file);
+    println!("Writing test data to {file:?}");
     let test_parquet_file =
         TestParquetFile::try_new(file, generator, page_size, row_group_size).unwrap();
     println!(
@@ -377,7 +377,7 @@ impl<'a> TestCase<'a> {
         filter: &Expr,
     ) -> RecordBatch {
         println!("  scan options: {scan_options:?}");
-        println!("  reading with filter {:?}", filter);
+        println!("  reading with filter {filter:?}");
         let ctx = SessionContext::new();
         let exec = self
             .test_parquet_file
@@ -404,7 +404,7 @@ impl<'a> TestCase<'a> {
         let metrics =
             TestParquetFile::parquet_metrics(exec).expect("found parquet metrics");
         let pushdown_rows_filtered = get_value(&metrics, "pushdown_rows_filtered");
-        println!("  pushdown_rows_filtered: {}", pushdown_rows_filtered);
+        println!("  pushdown_rows_filtered: {pushdown_rows_filtered}");
 
         match pushdown_expected {
             PushdownExpected::None => {
@@ -427,8 +427,7 @@ fn get_value(metrics: &MetricsSet, metric_name: &str) -> usize {
         Some(v) => v.as_usize(),
         _ => {
             panic!(
-                "Expected metric not found. Looking for '{}' in\n\n{:#?}",
-                metric_name, metrics
+                "Expected metric not found. Looking for '{metric_name}' in\n\n{metrics:#?}"
             );
         }
     }

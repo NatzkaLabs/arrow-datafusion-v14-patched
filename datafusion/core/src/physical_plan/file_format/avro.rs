@@ -224,7 +224,7 @@ mod tests {
     #[tokio::test]
     async fn avro_exec_without_partition() -> Result<()> {
         let testdata = crate::test_util::arrow_test_data();
-        let filename = format!("{}/avro/alltypes_plain.avro", testdata);
+        let filename = format!("{testdata}/avro/alltypes_plain.avro");
         let store = Arc::new(LocalFileSystem::new()) as _;
         let meta = local_unpartitioned_file(filename);
 
@@ -285,7 +285,7 @@ mod tests {
     #[tokio::test]
     async fn avro_exec_missing_column() -> Result<()> {
         let testdata = crate::test_util::arrow_test_data();
-        let filename = format!("{}/avro/alltypes_plain.avro", testdata);
+        let filename = format!("{testdata}/avro/alltypes_plain.avro");
         let object_store = Arc::new(LocalFileSystem::new()) as _;
         let object_store_url = ObjectStoreUrl::local_filesystem();
         let meta = local_unpartitioned_file(filename);
@@ -355,7 +355,7 @@ mod tests {
     #[tokio::test]
     async fn avro_exec_with_partition() -> Result<()> {
         let testdata = crate::test_util::arrow_test_data();
-        let filename = format!("{}/avro/alltypes_plain.avro", testdata);
+        let filename = format!("{testdata}/avro/alltypes_plain.avro");
         let object_store = Arc::new(LocalFileSystem::new()) as _;
         let object_store_url = ObjectStoreUrl::local_filesystem();
         let meta = local_unpartitioned_file(filename);

@@ -687,7 +687,7 @@ mod tests {
         \n    TableScan: test2 projection=[c1]";
 
         let optimized_plan = optimize(&plan)?;
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         assert_eq!(formatted_plan, expected);
 
         // make sure schema for join node include both join columns
@@ -730,7 +730,7 @@ mod tests {
         \n    TableScan: test2 projection=[c1]";
 
         let optimized_plan = optimize(&plan)?;
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         assert_eq!(formatted_plan, expected);
 
         // make sure schema for join node include both join columns
@@ -771,7 +771,7 @@ mod tests {
         \n    TableScan: test2 projection=[a]";
 
         let optimized_plan = optimize(&plan)?;
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         assert_eq!(formatted_plan, expected);
 
         // make sure schema for join node include both join columns
@@ -966,8 +966,8 @@ mod tests {
         let optimized_plan2 =
             optimize(&optimized_plan1).expect("failed to optimize plan");
 
-        let formatted_plan1 = format!("{:?}", optimized_plan1);
-        let formatted_plan2 = format!("{:?}", optimized_plan2);
+        let formatted_plan1 = format!("{optimized_plan1:?}");
+        let formatted_plan2 = format!("{optimized_plan2:?}");
         assert_eq!(formatted_plan1, formatted_plan2);
         Ok(())
     }
@@ -1026,7 +1026,7 @@ mod tests {
 
     fn assert_optimized_plan_eq(plan: &LogicalPlan, expected: &str) {
         let optimized_plan = optimize(plan).expect("failed to optimize plan");
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         assert_eq!(formatted_plan, expected);
     }
 

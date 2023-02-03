@@ -151,7 +151,7 @@ mod tests {
 
     fn assert_optimized_plan_eq(plan: &LogicalPlan, expected: &str) {
         let optimized_plan = optimize_plan(plan);
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         assert_eq!(formatted_plan, expected);
     }
 

@@ -131,7 +131,7 @@ async fn invalid_qualified_table_references() -> Result<()> {
         "nonexistentcatalog.public.aggregate_test_100",
         "way.too.many.namespaces.as.ident.prefixes.aggregate_test_100",
     ] {
-        let sql = format!("SELECT COUNT(*) FROM {}", table_ref);
+        let sql = format!("SELECT COUNT(*) FROM {table_ref}");
         assert!(matches!(ctx.sql(&sql).await, Err(DataFusionError::Plan(_))));
     }
     Ok(())

@@ -236,11 +236,10 @@ async fn custom_source_dataframe() -> Result<()> {
     }
 
     let expected = format!(
-        "Projection: {}.c2\
-        \n  TableScan: {} projection=[c2]",
-        UNNAMED_TABLE, UNNAMED_TABLE
+        "Projection: {UNNAMED_TABLE}.c2\
+        \n  TableScan: {UNNAMED_TABLE} projection=[c2]"
     );
-    assert_eq!(format!("{:?}", optimized_plan), expected);
+    assert_eq!(format!("{optimized_plan:?}"), expected);
 
     let physical_plan = ctx.create_physical_plan(&optimized_plan).await?;
 
@@ -276,8 +275,7 @@ async fn optimizers_catch_all_statistics() {
     // when the optimization kicks in, the source is replaced by an EmptyExec
     assert!(
         contains_empty_exec(Arc::clone(&physical_plan)),
-        "Expected aggregate_statistics optimizations missing: {:?}",
-        physical_plan
+        "Expected aggregate_statistics optimizations missing: {physical_plan:?}"
     );
 
     let expected = RecordBatch::try_new(
@@ -298,7 +296,7 @@ async fn optimizers_catch_all_statistics() {
     let actual = collect(physical_plan, task_ctx).await.unwrap();
 
     assert_eq!(actual.len(), 1);
-    assert_eq!(format!("{:?}", actual[0]), format!("{:?}", expected));
+    assert_eq!(format!("{:?}", actual[0]), format!("{expected:?}"));
 }
 
 fn contains_empty_exec(plan: Arc<dyn ExecutionPlan>) -> bool {
