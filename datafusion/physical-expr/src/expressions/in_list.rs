@@ -389,8 +389,7 @@ mod tests {
         let result_type = get_coerce_type(expr_type, &list_types);
         match result_type {
             None => Err(DataFusionError::Plan(format!(
-                "Can not find compatible types to compare {:?} with {:?}",
-                expr_type, list_types
+                "Can not find compatible types to compare {expr_type:?} with {list_types:?}"
             ))),
             Some(data_type) => {
                 // find the coerced type

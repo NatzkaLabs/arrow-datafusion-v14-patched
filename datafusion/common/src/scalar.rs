@@ -3256,16 +3256,13 @@ mod tests {
             println!("**** Test Case *****");
             let TestCase { array, scalars } = case;
             println!("Input array type: {}", array.data_type());
-            println!("Input scalars: {:#?}", scalars);
+            println!("Input scalars: {scalars:#?}");
             assert_eq!(array.len(), scalars.len());
 
             for (index, scalar) in scalars.into_iter().enumerate() {
                 assert!(
                     scalar.eq_array(&array, index),
-                    "Expected {:?} to be equal to {:?} at index {}",
-                    scalar,
-                    array,
-                    index
+                    "Expected {scalar:?} to be equal to {array:?} at index {index}"
                 );
 
                 // test that all other elements are *not* equal
@@ -3273,10 +3270,7 @@ mod tests {
                     if index != other_index {
                         assert!(
                             !scalar.eq_array(&array, other_index),
-                            "Expected {:?} to be NOT equal to {:?} at index {}",
-                            scalar,
-                            array,
-                            other_index
+                            "Expected {scalar:?} to be NOT equal to {array:?} at index {other_index}"                            
                         );
                     }
                 }
@@ -3413,13 +3407,13 @@ mod tests {
 
         // Check Display
         assert_eq!(
-            format!("{}", scalar),
+            format!("{scalar}"),
             String::from("{A:23,B:false,C:Hello,D:{e:2,f:3}}")
         );
 
         // Check Debug
         assert_eq!(
-            format!("{:?}", scalar),
+            format!("{scalar:?}"),
             String::from(
                 r#"Struct({A:Int32(23),B:Boolean(false),C:Utf8("Hello"),D:Struct({e:Int16(2),f:Int64(3)})})"#
             )
@@ -3465,7 +3459,7 @@ mod tests {
         // None version
         let none_scalar = ScalarValue::try_from(array.data_type()).unwrap();
         assert!(none_scalar.is_null());
-        assert_eq!(format!("{:?}", none_scalar), String::from("Struct(NULL)"));
+        assert_eq!(format!("{none_scalar:?}"), String::from("Struct(NULL)"));
 
         // Construct with convenience From<Vec<(&str, ScalarValue)>>
         let constructed = ScalarValue::from(vec![

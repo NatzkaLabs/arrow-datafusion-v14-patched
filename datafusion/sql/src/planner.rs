@@ -2949,7 +2949,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 r##"Internal("Decimal(precision = 0, scale = 0) should satisty `0 < precision <= 38`, and `scale <= precision`.")"##,
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
         // precision > 38
@@ -2958,7 +2958,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 r##"Internal("Decimal(precision = 39, scale = 0) should satisty `0 < precision <= 38`, and `scale <= precision`.")"##,
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
         // precision < scale
@@ -2967,7 +2967,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 r##"Internal("Decimal(precision = 5, scale = 10) should satisty `0 < precision <= 38`, and `scale <= precision`.")"##,
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
     }
@@ -2985,7 +2985,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"person.age\" at position 0 and \"person.age\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -2995,7 +2995,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"person.age\" at position 3 and \"person.age\" at position 8 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3183,7 +3183,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Source table contains 3 columns but only 2 names given as column alias\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3206,7 +3206,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"HAVING clause references column(s) not provided by the select: Expression person.first_name could not be resolved from available columns: person.id, person.age\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3220,7 +3220,7 @@ mod tests {
             "Plan(\"HAVING clause references column(s) not provided by the select: \
             Expression person.age could not be resolved from available columns: \
             person.id, person.age + Int64(1)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3232,7 +3232,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.first_name could not be resolved from available columns: MAX(person.age)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3270,7 +3270,7 @@ mod tests {
             "Plan(\"HAVING clause references non-aggregate values: \
             Expression person.first_name could not be resolved from available columns: \
             COUNT(UInt8(1))\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3394,7 +3394,7 @@ mod tests {
             "Plan(\"HAVING clause references non-aggregate values: \
             Expression person.last_name could not be resolved from available columns: \
             person.first_name, MAX(person.age)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3547,7 +3547,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"MIN(person.age)\" at position 0 and \"MIN(person.age)\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3588,7 +3588,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"MIN(person.age) AS a\" at position 0 and \"MIN(person.age) AS a\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3618,7 +3618,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"person.state AS a\" at position 0 and \"MIN(person.age) AS a\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3638,7 +3638,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!("Schema error: No field named 'doesnotexist'. Valid fields are 'SUM(person.age)', \
         'person'.'id', 'person'.'first_name', 'person'.'last_name', 'person'.'age', 'person'.'state', \
-        'person'.'salary', 'person'.'birth_date', 'person'.'😀'.", format!("{}", err));
+        'person'.'salary', 'person'.'birth_date', 'person'.'😀'.", format!("{err}"));
     }
 
     #[test]
@@ -3654,7 +3654,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r#"NotImplemented("Interval field value out of range: \"100000000000000000 day\"")"#,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3682,7 +3682,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r#"NotImplemented("Recursive CTEs are not supported")"#,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3692,7 +3692,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r#"NotImplemented("Arrays with elements other than literal are not supported: now()")"#,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3728,14 +3728,14 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.state could not be resolved from available columns: Int64(0), MIN(person.age)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
 
         let sql2 = "SELECT state, MIN(age) FROM person GROUP BY 5";
         let err2 = logical_plan(sql2).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.state could not be resolved from available columns: Int64(5), MIN(person.age)\")",
-            format!("{:?}", err2)
+            format!("{err2:?}")
         );
     }
 
@@ -3755,7 +3755,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"MIN(person.age)\" at position 1 and \"MIN(person.age)\" at position 2 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3816,7 +3816,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.age could not be resolved from available columns: person.age + Int64(1), MIN(person.first_name)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3826,7 +3826,7 @@ mod tests {
         let sql = "SELECT age, MIN(first_name) FROM person GROUP BY age + 1";
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!("Plan(\"Projection references non-aggregate values: Expression person.age could not be resolved from available columns: person.age + Int64(1), MIN(person.first_name)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3976,7 +3976,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Order by index starts at 1 for column indexes\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3986,7 +3986,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Order by column out of bounds, specified: 2, max: 1\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4083,7 +4083,7 @@ mod tests {
             "Plan(\"Projection references non-aggregate values: \
             Expression aggregate_test_100.c13 could not be resolved from available columns: \
             aggregate_test_100.c1, MIN(aggregate_test_100.c12)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4133,7 +4133,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 "Plan(\"File compression type can be specified for CSV/JSON files.\")",
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
     }
@@ -4145,7 +4145,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Column definitions can not be specified for PARQUET files.\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4362,7 +4362,7 @@ mod tests {
             not compatible with column IntervalMonthDayNano\
             (\\\"950737950189618795196236955648\\\") \
             (type: Interval(MonthDayNano))\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4468,7 +4468,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"UNION Column a (type: Boolean) is not compatible with column a (type: Utf8)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4605,7 +4605,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"With window frame of type RANGE, the order by expression must be of length 1, got 0\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4616,7 +4616,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"With window frame of type RANGE, the order by expression must be of length 1, got 2\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4874,7 +4874,7 @@ mod tests {
     /// Create logical plan, write with formatter, compare to expected output
     fn quick_test(sql: &str, expected: &str) {
         let plan = logical_plan(sql).unwrap();
-        assert_eq!(format!("{:?}", plan), expected);
+        assert_eq!(format!("{plan:?}"), expected);
     }
 
     struct MockContextProvider {}
@@ -5022,7 +5022,7 @@ mod tests {
         let sql = "with a as (select * from person), a as (select * from orders) select * from a;";
         let expected = "SQL error: ParserError(\"WITH query name \\\"a\\\" specified more than once\")";
         let result = logical_plan(sql).err().unwrap();
-        assert_eq!(expected, format!("{}", result));
+        assert_eq!(expected, format!("{result}"));
     }
 
     #[test]
@@ -5256,7 +5256,7 @@ mod tests {
 
         let expected = "Error during planning: Source table contains 3 columns but only 1 names given as column alias";
         let result = logical_plan(sql).err().unwrap();
-        assert_eq!(expected, format!("{}", result));
+        assert_eq!(expected, format!("{result}"));
     }
 
     #[test]
@@ -5452,10 +5452,10 @@ mod tests {
     fn assert_field_not_found(err: DataFusionError, name: &str) {
         match err {
             DataFusionError::SchemaError { .. } => {
-                let msg = format!("{}", err);
-                let expected = format!("Schema error: No field named '{}'.", name);
+                let msg = format!("{err}");
+                let expected = format!("Schema error: No field named '{name}'.");
                 if !msg.starts_with(&expected) {
-                    panic!("error [{}] did not start with [{}]", msg, expected);
+                    panic!("error [{msg}] did not start with [{expected}]");
                 }
             }
             _ => panic!("assert_field_not_found wrong error type"),

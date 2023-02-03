@@ -1287,8 +1287,8 @@ mod test {
             .otherwise(lit(ScalarValue::Null))?;
         let expected = "CASE a WHEN Int32(1) THEN Boolean(true) WHEN Int32(0) THEN Boolean(false) ELSE NULL END";
         assert_eq!(expected, expr.canonical_name());
-        assert_eq!(expected, format!("{}", expr));
-        assert_eq!(expected, format!("{:?}", expr));
+        assert_eq!(expected, format!("{expr}"));
+        assert_eq!(expected, format!("{expr:?}"));
         assert_eq!(expected, expr.display_name()?);
         Ok(())
     }
@@ -1301,8 +1301,8 @@ mod test {
         });
         let expected_canonical = "CAST(Float32(1.23) AS Utf8)";
         assert_eq!(expected_canonical, expr.canonical_name());
-        assert_eq!(expected_canonical, format!("{}", expr));
-        assert_eq!(expected_canonical, format!("{:?}", expr));
+        assert_eq!(expected_canonical, format!("{expr}"));
+        assert_eq!(expected_canonical, format!("{expr:?}"));
         // note that CAST intentionally has a name that is different from its `Display`
         // representation. CAST does not change the name of expressions.
         assert_eq!("Float32(1.23)", expr.display_name()?);

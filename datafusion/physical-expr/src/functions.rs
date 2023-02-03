@@ -2703,24 +2703,22 @@ mod tests {
             match expr {
                 Ok(..) => {
                     return Err(DataFusionError::Plan(format!(
-                        "Builtin scalar function {} does not support empty arguments",
-                        fun
+                        "Builtin scalar function {fun} does not support empty arguments"
                     )));
                 }
                 Err(DataFusionError::Internal(err)) => {
                     if err
                         != format!(
-                            "Builtin scalar function {} does not support empty arguments",
-                            fun
+                            "Builtin scalar function {fun} does not support empty arguments"
                         )
                     {
                         return Err(DataFusionError::Internal(format!(
-                            "Builtin scalar function {} didn't got the right error message with empty arguments", fun)));
+                            "Builtin scalar function {fun} didn't got the right error message with empty arguments")));
                     }
                 }
                 Err(..) => {
                     return Err(DataFusionError::Internal(format!(
-                        "Builtin scalar function {} didn't got the right error with empty arguments", fun)));
+                        "Builtin scalar function {fun} didn't got the right error with empty arguments")));
                 }
             }
         }

@@ -374,7 +374,7 @@ mod tests {
                 .as_any()
                 .downcast_ref::<StringArray>()
                 .unwrap_or_else(|| {
-                    panic!("failed to downcast to StringArray : {:?}", result)
+                    panic!("failed to downcast to StringArray : {result:?}")
                 });
             let expected = &StringArray::from(expected);
             assert_eq!(expected, result);

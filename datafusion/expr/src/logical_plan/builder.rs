@@ -1064,7 +1064,7 @@ mod tests {
         \n  Filter: employee_csv.state = Utf8(\"CO\")\
         \n    TableScan: employee_csv projection=[id, state]";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1097,7 +1097,7 @@ mod tests {
                 \n    Aggregate: groupBy=[[employee_csv.state]], aggr=[[SUM(employee_csv.salary) AS total_salary]]\
                 \n      TableScan: employee_csv projection=[state, salary]";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1123,7 +1123,7 @@ mod tests {
         let expected = "Sort: employee_csv.state ASC NULLS FIRST, employee_csv.salary DESC NULLS LAST\
         \n  TableScan: employee_csv projection=[state, salary]";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1143,7 +1143,7 @@ mod tests {
         \n    TableScan: t1\
         \n    TableScan: t2";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1166,7 +1166,7 @@ mod tests {
         \n  TableScan: employee_csv projection=[state, salary]\
         \n  TableScan: employee_csv projection=[state, salary]";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1191,7 +1191,7 @@ mod tests {
         \n    TableScan: employee_csv projection=[state, salary]\
         \n    TableScan: employee_csv projection=[state, salary]";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1227,7 +1227,7 @@ mod tests {
         \n    Filter: employee_csv.state = Utf8(\"CO\")\
         \n      TableScan: employee_csv projection=[id, state]";
 
-        assert_eq!(expected, format!("{:?}", plan));
+        assert_eq!(expected, format!("{plan:?}"));
 
         Ok(())
     }
@@ -1254,7 +1254,7 @@ mod tests {
         \n        TableScan: foo\
         \n  Projection: bar.a\
         \n    TableScan: bar";
-        assert_eq!(expected, format!("{:?}", outer_query));
+        assert_eq!(expected, format!("{outer_query:?}"));
 
         Ok(())
     }
@@ -1282,7 +1282,7 @@ mod tests {
         \n        TableScan: foo\
         \n  Projection: bar.a\
         \n    TableScan: bar";
-        assert_eq!(expected, format!("{:?}", outer_query));
+        assert_eq!(expected, format!("{outer_query:?}"));
 
         Ok(())
     }
@@ -1308,7 +1308,7 @@ mod tests {
         \n      Projection: foo.b\
         \n        TableScan: foo\
         \n  TableScan: bar";
-        assert_eq!(expected, format!("{:?}", outer_query));
+        assert_eq!(expected, format!("{outer_query:?}"));
 
         Ok(())
     }

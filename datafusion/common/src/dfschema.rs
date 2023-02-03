@@ -615,7 +615,7 @@ mod tests {
         let err = schema.index_of_column_by_name(None, "t1.c0").err().unwrap();
         assert_eq!(
             "Schema error: No field named 't1.c0'. Valid fields are 't1'.'c0', 't1'.'c1'.",
-            &format!("{}", err)
+            &format!("{err}")
         );
         Ok(())
     }
