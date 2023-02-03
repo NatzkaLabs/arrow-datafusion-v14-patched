@@ -737,7 +737,7 @@ mod tests {
         name: &str,
     ) -> Result<Arc<dyn TableProvider>> {
         let testdata = crate::test_util::parquet_test_data();
-        let filename = format!("{}/{}", testdata, name);
+        let filename = format!("{testdata}/{name}");
         let table_path = ListingTableUrl::parse(filename).unwrap();
 
         let config = ListingTableConfig::new(table_path)

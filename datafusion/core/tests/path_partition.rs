@@ -127,7 +127,7 @@ async fn parquet_distinct_partition_col() -> Result<()> {
 
     min_limit -= 1;
 
-    let sql_cross_partition_boundary = format!("SELECT month FROM t limit {}", max_limit);
+    let sql_cross_partition_boundary = format!("SELECT month FROM t limit {max_limit}");
     let resulting_limit: i64 = ctx
         .sql(sql_cross_partition_boundary.as_str())
         .await?
@@ -140,7 +140,7 @@ async fn parquet_distinct_partition_col() -> Result<()> {
     assert_eq!(max_limit, resulting_limit);
 
     let sql_within_partition_boundary =
-        format!("SELECT month from t limit {}", min_limit);
+        format!("SELECT month from t limit {min_limit}");
     let resulting_limit: i64 = ctx
         .sql(sql_within_partition_boundary.as_str())
         .await?
@@ -155,7 +155,7 @@ async fn parquet_distinct_partition_col() -> Result<()> {
     let s = ScalarValue::try_from_array(results[0].column(1), 0)?;
     let month = match extract_as_utf(&s) {
         Some(month) => month,
-        s => panic!("Expected month as Dict(_, Utf8) found {:?}", s),
+        s => panic!("Expected month as Dict(_, Utf8) found {s:?}"),
     };
 
     let sql_on_partition_boundary = format!(
@@ -426,7 +426,7 @@ fn register_partitioned_aggregate_csv(
     table_path: &str,
 ) {
     let testdata = arrow_test_data();
-    let csv_file_path = format!("{}/csv/aggregate_test_100.csv", testdata);
+    let csv_file_path = format!("{testdata}/csv/aggregate_test_100.csv");
     let file_schema = test_util::aggr_test_schema();
     ctx.runtime_env().register_object_store(
         "mirror",
@@ -455,7 +455,7 @@ async fn register_partitioned_alltypes_parquet(
     source_file: &str,
 ) {
     let testdata = parquet_test_data();
-    let parquet_file_path = format!("{}/{}", testdata, source_file);
+    let parquet_file_path = format!("{testdata}/{source_file}");
     ctx.runtime_env().register_object_store(
         "mirror",
         "",
@@ -498,7 +498,7 @@ pub struct MirroringObjectStore {
 
 impl std::fmt::Display for MirroringObjectStore {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+        write!(f, "{self:?}")
     }
 }
 
@@ -548,7 +548,7 @@ impl ObjectStore for MirroringObjectStore {
     ) -> object_store::Result<Bytes> {
         self.files.iter().find(|x| *x == location.as_ref()).unwrap();
         let path = std::path::PathBuf::from(&self.mirrored_file);
-        let mut file = File::open(&path).unwrap();
+        let mut file = File::open(path).unwrap();
         file.seek(SeekFrom::Start(range.start as u64)).unwrap();
 
         let to_read = range.end - range.start;

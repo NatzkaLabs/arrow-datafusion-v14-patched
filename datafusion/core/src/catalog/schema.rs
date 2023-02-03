@@ -162,9 +162,9 @@ mod tests {
     async fn test_schema_register_listing_table() {
         let testdata = crate::test_util::parquet_test_data();
         let testdir = if testdata.starts_with('/') {
-            format!("file://{}", testdata)
+            format!("file://{testdata}")
         } else {
-            format!("file:///{}", testdata)
+            format!("file:///{testdata}")
         };
         let filename = if testdir.ends_with('/') {
             format!("{}{}", testdir, "alltypes_plain.parquet")

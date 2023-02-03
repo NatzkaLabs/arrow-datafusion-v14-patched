@@ -324,7 +324,7 @@ async fn window_expr_eliminate() -> Result<()> {
             GROUP BY d.b
             ORDER BY d.b;";
 
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(&("explain ".to_owned() + sql))
         .expect(&msg);
@@ -352,8 +352,7 @@ async fn window_expr_eliminate() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     let results = execute_to_batches(&ctx, sql).await;
@@ -416,8 +415,7 @@ async fn window_expr_eliminate() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     let results = execute_to_batches(&ctx, sql).await;

@@ -579,8 +579,8 @@ mod tests {
         }
 
         let possibilities = vec![
-            format!("expected-plans/q{}.txt", query),
-            format!("benchmarks/expected-plans/q{}.txt", query),
+            format!("expected-plans/q{query}.txt"),
+            format!("benchmarks/expected-plans/q{query}.txt"),
         ];
 
         let mut found = false;
@@ -589,8 +589,7 @@ mod tests {
             if let Ok(expected) = read_text_file(path) {
                 assert_eq!(expected, actual,
                            // generate output that is easier to copy/paste/update
-                           "\n\nMismatch of expected content in: {:?}\nExpected:\n\n{}\n\nActual:\n\n{}\n\n",
-                           path, expected, actual);
+                           "\n\nMismatch of expected content in: {path:?}\nExpected:\n\n{expected}\n\nActual:\n\n{actual}\n\n");
                 found = true;
                 break;
             }

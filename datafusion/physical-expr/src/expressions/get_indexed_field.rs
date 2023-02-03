@@ -357,7 +357,7 @@ mod tests {
         let result = result
             .as_any()
             .downcast_ref::<ListArray>()
-            .unwrap_or_else(|| panic!("failed to downcast to ListArray : {:?}", result));
+            .unwrap_or_else(|| panic!("failed to downcast to ListArray : {result:?}"));
         let expected =
             &build_utf8_lists(list_of_tuples.into_iter().map(|t| t.1).collect());
         assert_eq!(expected, result);

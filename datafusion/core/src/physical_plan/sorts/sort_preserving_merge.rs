@@ -954,8 +954,7 @@ mod tests {
 
         assert_eq!(
             basic, partition,
-            "basic:\n\n{}\n\npartition:\n\n{}\n\n",
-            basic, partition
+            "basic:\n\n{basic}\n\npartition:\n\n{partition}\n\n"
         );
     }
 
@@ -1230,8 +1229,7 @@ mod tests {
 
         assert_eq!(
             basic, partition,
-            "basic:\n\n{}\n\npartition:\n\n{}\n\n",
-            basic, partition
+            "basic:\n\n{basic}\n\npartition:\n\n{partition}\n\n"
         );
     }
 

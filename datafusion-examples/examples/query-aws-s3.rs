@@ -52,8 +52,7 @@ async fn main() -> Result<()> {
     // and we don't support that yet
     // https://github.com/apache/arrow-rs/issues/2799
     let path = format!(
-        "s3://{}/csv_backup/yellow_tripdata_2022-02.csv",
-        bucket_name
+        "s3://{bucket_name}/csv_backup/yellow_tripdata_2022-02.csv"
     );
     ctx.register_csv("trips", &path, CsvReadOptions::default())
         .await?;

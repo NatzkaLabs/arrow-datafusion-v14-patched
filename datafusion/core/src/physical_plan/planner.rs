@@ -1806,7 +1806,7 @@ mod tests {
         // the cast from u8 to i64 for literal will be simplified, and get lit(int64(5))
         // the cast here is implicit so has CastOptions with safe=true
         let expected = "BinaryExpr { left: Column { name: \"c7\", index: 2 }, op: Lt, right: Literal { value: Int64(5) } }";
-        assert!(format!("{:?}", exec_plan).contains(expected));
+        assert!(format!("{exec_plan:?}").contains(expected));
         Ok(())
     }
 
@@ -1832,7 +1832,7 @@ mod tests {
 
         let expected = r#"Ok(PhysicalGroupBy { expr: [(Column { name: "c1", index: 0 }, "c1"), (Column { name: "c2", index: 1 }, "c2"), (Column { name: "c3", index: 2 }, "c3")], null_expr: [(Literal { value: Utf8(NULL) }, "c1"), (Literal { value: Int64(NULL) }, "c2"), (Literal { value: Int64(NULL) }, "c3")], groups: [[false, false, false], [true, false, false], [false, true, false], [false, false, true], [true, true, false], [true, false, true], [false, true, true], [true, true, true]] })"#;
 
-        assert_eq!(format!("{:?}", cube), expected);
+        assert_eq!(format!("{cube:?}"), expected);
 
         Ok(())
     }
@@ -1859,7 +1859,7 @@ mod tests {
 
         let expected = r#"Ok(PhysicalGroupBy { expr: [(Column { name: "c1", index: 0 }, "c1"), (Column { name: "c2", index: 1 }, "c2"), (Column { name: "c3", index: 2 }, "c3")], null_expr: [(Literal { value: Utf8(NULL) }, "c1"), (Literal { value: Int64(NULL) }, "c2"), (Literal { value: Int64(NULL) }, "c3")], groups: [[true, true, true], [false, true, true], [false, false, true], [false, false, false]] })"#;
 
-        assert_eq!(format!("{:?}", rollup), expected);
+        assert_eq!(format!("{rollup:?}"), expected);
 
         Ok(())
     }
@@ -1879,7 +1879,7 @@ mod tests {
         )?;
         let expected = expressions::not(expressions::col("a", &schema)?)?;
 
-        assert_eq!(format!("{:?}", expr), format!("{:?}", expected));
+        assert_eq!(format!("{expr:?}"), format!("{expected:?}"));
 
         Ok(())
     }
@@ -1897,7 +1897,7 @@ mod tests {
         // c12 is f64, c7 is u8 -> cast c7 to f64
         // the cast here is implicit so has CastOptions with safe=true
         let _expected = "predicate: BinaryExpr { left: TryCastExpr { expr: Column { name: \"c7\", index: 6 }, cast_type: Float64 }, op: Lt, right: Column { name: \"c12\", index: 11 } }";
-        let plan_debug_str = format!("{:?}", plan);
+        let plan_debug_str = format!("{plan:?}");
         assert!(plan_debug_str.contains("GlobalLimitExec"));
         assert!(plan_debug_str.contains("skip: 3"));
         Ok(())
@@ -1907,7 +1907,7 @@ mod tests {
     async fn test_with_zero_offset_plan() -> Result<()> {
         let logical_plan = test_csv_scan().await?.limit(0, None)?.build()?;
         let plan = plan(&logical_plan).await?;
-        assert!(format!("{:?}", plan).contains("limit: None"));
+        assert!(format!("{plan:?}").contains("limit: None"));
         Ok(())
     }
 
@@ -1920,12 +1920,12 @@ mod tests {
             .build()?;
         let plan = plan(&logical_plan).await?;
 
-        assert!(format!("{:?}", plan).contains("GlobalLimitExec"));
-        assert!(format!("{:?}", plan).contains("skip: 3, fetch: Some(5)"));
+        assert!(format!("{plan:?}").contains("GlobalLimitExec"));
+        assert!(format!("{plan:?}").contains("skip: 3, fetch: Some(5)"));
 
         // LocalLimitExec adjusts the `fetch`
-        assert!(format!("{:?}", plan).contains("LocalLimitExec"));
-        assert!(format!("{:?}", plan).contains("fetch: 8"));
+        assert!(format!("{plan:?}").contains("LocalLimitExec"));
+        assert!(format!("{plan:?}").contains("fetch: 8"));
         Ok(())
     }
 
@@ -1947,8 +1947,7 @@ mod tests {
         for case in cases {
             let logical_plan = test_csv_scan().await?.project(vec![case.clone()]);
             let message = format!(
-                "Expression {:?} expected to error due to impossible coercion",
-                case
+                "Expression {case:?} expected to error due to impossible coercion"
             );
             assert!(logical_plan.is_err(), "{}", message);
         }
@@ -1972,9 +1971,7 @@ mod tests {
             Ok(_) => panic!("Expected planning failure"),
             Err(e) => assert!(
                 e.to_string().contains(expected_error),
-                "Error '{}' did not contain expected error '{}'",
-                e,
-                expected_error
+                "Error '{e}' did not contain expected error '{expected_error}'"
             ),
         }
     }
@@ -2019,9 +2016,7 @@ mod tests {
             Ok(_) => panic!("Expected planning failure"),
             Err(e) => assert!(
                 e.to_string().contains(expected_error),
-                "Error '{}' did not contain expected error '{}'",
-                e,
-                expected_error
+                "Error '{e}' did not contain expected error '{expected_error}'"
             ),
         }
     }
@@ -2041,7 +2036,7 @@ mod tests {
 
         let expected = "expr: [(BinaryExpr { left: BinaryExpr { left: Column { name: \"c1\", index: 0 }, op: Eq, right: Literal { value: Utf8(\"1\") } }, op: Or, right: BinaryExpr { left: Column { name: \"c1\", index: 0 }, op: Eq, right: Literal { value: Utf8(\"a\") } } }";
 
-        let actual = format!("{:?}", execution_plan);
+        let actual = format!("{execution_plan:?}");
         assert!(actual.contains(expected), "{}", actual);
 
         Ok(())
@@ -2133,7 +2128,7 @@ mod tests {
             .build()?;
 
         let execution_plan = plan(&logical_plan).await?;
-        let formatted = format!("{:?}", execution_plan);
+        let formatted = format!("{execution_plan:?}");
 
         // Make sure the plan contains a FinalPartitioned, which means it will not use the Final
         // mode in Aggregate (which is slower)
@@ -2163,7 +2158,7 @@ mod tests {
                 .build()?;
 
         let execution_plan = plan(&logical_plan).await?;
-        let formatted = format!("{:?}", execution_plan);
+        let formatted = format!("{execution_plan:?}");
 
         // Make sure the plan contains a FinalPartitioned, which means it will not use the Final
         // mode in Aggregate (which is slower)
@@ -2184,7 +2179,7 @@ mod tests {
             .build()?;
 
         let execution_plan = plan(&logical_plan).await?;
-        let formatted = format!("{:?}", execution_plan);
+        let formatted = format!("{execution_plan:?}");
 
         // Make sure the plan contains a FinalPartitioned, which means it will not use the Final
         // mode in Aggregate (which is slower)
@@ -2374,7 +2369,7 @@ mod tests {
     async fn test_csv_scan_with_name(name: &str) -> Result<LogicalPlanBuilder> {
         let ctx = SessionContext::new();
         let testdata = crate::test_util::arrow_test_data();
-        let path = format!("{}/csv/aggregate_test_100.csv", testdata);
+        let path = format!("{testdata}/csv/aggregate_test_100.csv");
         let options = CsvReadOptions::new().schema_infer_max_records(100);
         let logical_plan = match ctx.read_csv(path, options).await?.to_logical_plan()? {
             LogicalPlan::TableScan(ref scan) => {
@@ -2396,7 +2391,7 @@ mod tests {
     async fn test_csv_scan() -> Result<LogicalPlanBuilder> {
         let ctx = SessionContext::new();
         let testdata = crate::test_util::arrow_test_data();
-        let path = format!("{}/csv/aggregate_test_100.csv", testdata);
+        let path = format!("{testdata}/csv/aggregate_test_100.csv");
         let options = CsvReadOptions::new().schema_infer_max_records(100);
         Ok(LogicalPlanBuilder::from(
             ctx.read_csv(path, options).await?.to_logical_plan()?,

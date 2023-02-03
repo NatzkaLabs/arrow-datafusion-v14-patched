@@ -734,7 +734,7 @@ mod tests {
         let mut t = TDigest::new(10);
 
         for v in vals {
-            t = t.merge_unsorted_f64(vec![OrderedFloat::from(v as f64)]);
+            t = t.merge_unsorted_f64(vec![OrderedFloat::from(v)]);
         }
 
         assert_error_bounds!(t, quantile = 0.5, want = 1.0);
@@ -747,7 +747,7 @@ mod tests {
         let t = TDigest::new(100);
         let values: Vec<_> = (1..=1_000_000)
             .map(f64::from)
-            .map(|v| OrderedFloat::from(v as f64))
+            .map(OrderedFloat::from)
             .collect();
 
         let t = t.merge_unsorted_f64(values);
@@ -765,7 +765,7 @@ mod tests {
         let t = TDigest::new(100);
         let mut values: Vec<_> = (1..=600_000)
             .map(f64::from)
-            .map(|v| OrderedFloat::from(v as f64))
+            .map(OrderedFloat::from)
             .collect();
         for _ in 0..400_000 {
             values.push(OrderedFloat::from(1_000_000_f64));
@@ -787,7 +787,7 @@ mod tests {
             let t = TDigest::new(100);
             let values: Vec<_> = (1..=1_000)
                 .map(f64::from)
-                .map(|v| OrderedFloat::from(v as f64))
+                .map(OrderedFloat::from)
                 .collect();
             let t = t.merge_unsorted_f64(values);
             digests.push(t)

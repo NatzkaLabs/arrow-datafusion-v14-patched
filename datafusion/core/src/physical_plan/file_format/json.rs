@@ -486,7 +486,7 @@ mod tests {
         let ctx =
             SessionContext::with_config(SessionConfig::new().with_target_partitions(8));
 
-        let path = format!("{}/1.json", TEST_DATA_BASE);
+        let path = format!("{TEST_DATA_BASE}/1.json");
 
         // register json file with the execution context
         ctx.register_json("test", path.as_str(), NdJsonReadOptions::default())
@@ -504,7 +504,7 @@ mod tests {
         let json_read_option = NdJsonReadOptions::default();
         ctx.register_json(
             "part0",
-            &format!("{}/part-0.json", out_dir),
+            &format!("{out_dir}/part-0.json"),
             json_read_option.clone(),
         )
         .await?;
@@ -609,7 +609,7 @@ mod tests {
             .write_json(&out_dir)
             .await
             .expect_err("should fail because input file does not match inferred schema");
-        assert_eq!("Arrow error: Parser error: Error while parsing value d for column 0 at line 4", format!("{}", e));
+        assert_eq!("Arrow error: Parser error: Error while parsing value d for column 0 at line 4", format!("{e}"));
         Ok(())
     }
 }

@@ -524,8 +524,7 @@ mod tests {
                     DataFusionError::Internal("Found None count".to_string())
                 }),
                 scalar => Err(DataFusionError::Internal(format!(
-                    "Found non int64 scalar value from count: {}",
-                    scalar
+                    "Found non int64 scalar value from count: {scalar}"
                 ))),
             }?;
             Ok((state_vec, count))

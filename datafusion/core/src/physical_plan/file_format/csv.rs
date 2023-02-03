@@ -541,7 +541,7 @@ mod tests {
 
         // generate a partitioned file
         for partition in 0..partition_count {
-            let filename = format!("partition-{}.{}", partition, file_extension);
+            let filename = format!("partition-{partition}.{file_extension}");
             let file_path = tmp_dir.path().join(&filename);
             let mut file = File::create(file_path)?;
 
@@ -616,7 +616,7 @@ mod tests {
             .write_csv(&out_dir)
             .await
             .expect_err("should fail because input file does not match inferred schema");
-        assert_eq!("Arrow error: Parser error: Error while parsing value d for column 0 at line 4", format!("{}", e));
+        assert_eq!("Arrow error: Parser error: Error while parsing value d for column 0 at line 4", format!("{e}"));
         Ok(())
     }
 
@@ -654,7 +654,7 @@ mod tests {
         let csv_read_option = CsvReadOptions::new().schema(&schema);
         ctx.register_csv(
             "part0",
-            &format!("{}/part-0.csv", out_dir),
+            &format!("{out_dir}/part-0.csv"),
             csv_read_option.clone(),
         )
         .await?;

@@ -174,7 +174,7 @@ mod tests {
         let optimized_plan = rule
             .optimize(plan, &mut OptimizerConfig::new())
             .expect("failed to optimize plan");
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         assert_eq!(formatted_plan, expected);
     }
 
@@ -432,7 +432,7 @@ mod tests {
         let optimized_plan = rule
             .optimize(plan, &mut config)
             .expect("failed to optimize plan");
-        format!("{:?}", optimized_plan)
+        format!("{optimized_plan:?}")
     }
 
     #[test]
@@ -596,7 +596,7 @@ mod tests {
             .build()
             .unwrap();
 
-        println!("{:?}", plan);
+        println!("{plan:?}");
 
         // Note that constant folder runs and folds the entire
         // expression down to a single constant (true)

@@ -581,12 +581,12 @@ mod tests {
         ];
 
         for value in &values {
-            assert_eq!("0", value.to_string(), "value {:?}", value);
+            assert_eq!("0", value.to_string(), "value {value:?}");
         }
 
         count.add(42);
         for value in &values {
-            assert_eq!("42", value.to_string(), "value {:?}", value);
+            assert_eq!("42", value.to_string(), "value {value:?}");
         }
     }
 
@@ -603,12 +603,12 @@ mod tests {
 
         // if time is not set, it should not be reported as zero
         for value in &values {
-            assert_eq!("NOT RECORDED", value.to_string(), "value {:?}", value);
+            assert_eq!("NOT RECORDED", value.to_string(), "value {value:?}");
         }
 
         time.add_duration(Duration::from_nanos(1042));
         for value in &values {
-            assert_eq!("1.042µs", value.to_string(), "value {:?}", value);
+            assert_eq!("1.042µs", value.to_string(), "value {value:?}");
         }
     }
 
@@ -622,7 +622,7 @@ mod tests {
 
         // if time is not set, it should not be reported as zero
         for value in &values {
-            assert_eq!("NONE", value.to_string(), "value {:?}", value);
+            assert_eq!("NONE", value.to_string(), "value {value:?}");
         }
 
         timestamp.set(Utc.timestamp_nanos(1431648000000000));
@@ -630,8 +630,7 @@ mod tests {
             assert_eq!(
                 "1970-01-17 13:40:48 UTC",
                 value.to_string(),
-                "value {:?}",
-                value
+                "value {value:?}"
             );
         }
     }

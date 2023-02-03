@@ -939,8 +939,7 @@ mod tests {
             get_case_common_type(&when_thens, else_expr.clone(), input_schema);
         let (when_thens, else_expr) = match coerce_type {
             None => Err(DataFusionError::Plan(format!(
-                "Can't get a common type for then {:?} and else {:?} expression",
-                when_thens, else_expr
+                "Can't get a common type for then {when_thens:?} and else {else_expr:?} expression"
             ))),
             Some(data_type) => {
                 // cast then expr

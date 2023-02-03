@@ -613,7 +613,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: a < CAST(UInt32(2) AS Float64)\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -642,7 +642,7 @@ mod test {
         assert_eq!(
             "Projection: a < CAST(UInt32(2) AS Float64) OR a < CAST(UInt32(2) AS Float64)\
             \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -669,7 +669,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: TestScalarUDF(CAST(Int32(123) AS Float32))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -695,7 +695,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).err().unwrap();
         assert_eq!(
             "Plan(\"Coercion from [Utf8] to the signature Uniform(1, [Int32]) failed.\")",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -719,7 +719,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: abs(CAST(Int64(10) AS Float64))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -746,7 +746,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: MY_AVG(CAST(Int64(10) AS Float64))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -801,7 +801,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: AVG(Int64(12))\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let empty = empty_with_type(DataType::Int32);
@@ -817,7 +817,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: AVG(a)\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -856,7 +856,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config)?;
         assert_eq!(
             "Projection: CAST(Utf8(\"1998-03-18\") AS Date32) + IntervalDayTime(\"386547056640\")\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -882,7 +882,7 @@ mod test {
         assert_eq!(
             "Projection: a IN ([CAST(Int32(1) AS Int64), CAST(Int8(4) AS Int64), Int64(8)]) AS a IN (Map { iter: Iter([Int32(1), Int8(4), Int64(8)]) })\
              \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         // a in (1,4,8), a is decimal
         let expr = col("a").in_list(vec![lit(1_i32), lit(4_i8), lit(8_i64)], false);
@@ -901,7 +901,7 @@ mod test {
         assert_eq!(
             "Projection: CAST(a AS Decimal128(24, 4)) IN ([CAST(Int32(1) AS Decimal128(24, 4)), CAST(Int8(4) AS Decimal128(24, 4)), CAST(Int64(8) AS Decimal128(24, 4))]) AS a IN (Map { iter: Iter([Int32(1), Int8(4), Int64(8)]) })\
              \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -921,7 +921,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS TRUE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         let empty = empty_with_type(DataType::Int64);
         let plan = LogicalPlan::Projection(Projection::try_new(vec![expr], empty, None)?);
@@ -936,7 +936,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS NOT TRUE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         // is false
@@ -946,7 +946,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS FALSE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         // is not false
@@ -956,7 +956,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS NOT FALSE\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -975,7 +975,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a LIKE Utf8(\"abc\")\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let expr = Box::new(col("a"));
@@ -990,7 +990,7 @@ mod test {
         assert_eq!(
             "Projection: a LIKE CAST(NULL AS Utf8) AS a LIKE NULL \
              \n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let expr = Box::new(col("a"));
@@ -1022,7 +1022,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS UNKNOWN\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
 
         let empty = empty_with_type(DataType::Utf8);
@@ -1042,7 +1042,7 @@ mod test {
         let plan = rule.optimize(&plan, &mut config).unwrap();
         assert_eq!(
             "Projection: a IS NOT UNKNOWN\n  EmptyRelation",
-            &format!("{:?}", plan)
+            &format!("{plan:?}")
         );
         Ok(())
     }
@@ -1066,7 +1066,7 @@ mod test {
             let plan = rule.optimize(&plan, &mut config).unwrap();
             assert_eq!(
                 "Projection: concat(a, Utf8(\"b\"), CAST(Boolean(true) AS Utf8), CAST(Boolean(false) AS Utf8), CAST(Int32(13) AS Utf8))\n  EmptyRelation",
-                &format!("{:?}", plan)
+                &format!("{plan:?}")
             );
         }
 
@@ -1081,7 +1081,7 @@ mod test {
             let plan = rule.optimize(&plan, &mut config).unwrap();
             assert_eq!(
                 "Projection: concatwithseparator(Utf8(\"-\"), a, Utf8(\"b\"), CAST(Boolean(true) AS Utf8), CAST(Boolean(false) AS Utf8), CAST(Int32(13) AS Utf8))\n  EmptyRelation",
-                &format!("{:?}", plan)
+                &format!("{plan:?}")
             );
         }
 

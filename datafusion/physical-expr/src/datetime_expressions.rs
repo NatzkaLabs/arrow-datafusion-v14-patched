@@ -632,7 +632,7 @@ mod tests {
             let left = string_to_timestamp_nanos(original).unwrap();
             let right = string_to_timestamp_nanos(expected).unwrap();
             let result = date_trunc_single(granularity, left).unwrap();
-            assert_eq!(result, right, "{} = {}", original, expected);
+            assert_eq!(result, right, "{original} = {expected}");
         });
     }
 
@@ -692,7 +692,7 @@ mod tests {
 
                 let expected1 = string_to_timestamp_nanos(expected).unwrap();
                 let result = date_bin_single(stride1, source1, origin1);
-                assert_eq!(result, expected1, "{} = {}", source, expected);
+                assert_eq!(result, expected1, "{source} = {expected}");
             })
     }
 
@@ -824,9 +824,7 @@ mod tests {
             Err(e) => {
                 assert!(
                     e.to_string().contains(expected_err),
-                    "Can not find expected error '{}'. Actual error '{}'",
-                    expected_err,
-                    e
+                    "Can not find expected error '{expected_err}'. Actual error '{e}'"
                 );
             }
         }

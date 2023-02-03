@@ -2349,7 +2349,7 @@ mod tests {
         for table_ref in &["my_catalog.my_schema.test", "my_schema.test", "test"] {
             let result = plan_and_collect(
                 &ctx,
-                &format!("SELECT COUNT(*) AS count FROM {}", table_ref),
+                &format!("SELECT COUNT(*) AS count FROM {table_ref}"),
             )
             .await
             .unwrap();
@@ -2599,7 +2599,7 @@ mod tests {
 
         // generate a partitioned file
         for partition in 0..partition_count {
-            let filename = format!("partition-{}.{}", partition, file_extension);
+            let filename = format!("partition-{partition}.{file_extension}");
             let file_path = tmp_dir.path().join(&filename);
             let mut file = File::create(file_path)?;
 

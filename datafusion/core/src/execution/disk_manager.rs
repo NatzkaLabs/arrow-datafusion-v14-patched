@@ -207,6 +207,6 @@ mod tests {
                 .any(|candidate_path| *file_path == candidate_path)
         });
 
-        assert!(found, "Can't find {:?} in dirs: {:?}", file_path, dirs);
+        assert!(found, "Can't find {file_path:?} in dirs: {dirs:?}");
     }
 }

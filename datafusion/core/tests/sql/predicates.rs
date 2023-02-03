@@ -581,7 +581,7 @@ async fn multiple_or_predicates() -> Result<()> {
             and l_quantity >= 20 and l_quantity <= 20 + 10
             and p_size between 1 and 15
         )";
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx.create_logical_plan(sql).expect(&msg);
     let state = ctx.state();
     let plan = state.optimize(&plan)?;
@@ -607,8 +607,7 @@ async fn multiple_or_predicates() -> Result<()> {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     Ok(())
 }
@@ -649,7 +648,7 @@ where
         group by p_partkey
         ;"#;
 
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx.create_logical_plan(sql).expect(&msg);
     let state = ctx.state();
     let plan = state.optimize(&plan)?;
@@ -668,8 +667,7 @@ where
 
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     // assert data

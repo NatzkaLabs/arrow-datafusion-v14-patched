@@ -1268,13 +1268,13 @@ mod tests {
         let expr = col("c1").eq(lit(1));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         // test column on the right
         let expr = lit(1).eq(col("c1"));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1288,13 +1288,13 @@ mod tests {
         let expr = col("c1").not_eq(lit(1));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         // test column on the right
         let expr = lit(1).not_eq(col("c1"));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1308,13 +1308,13 @@ mod tests {
         let expr = col("c1").gt(lit(1));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         // test column on the right
         let expr = lit(1).lt(col("c1"));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1328,12 +1328,12 @@ mod tests {
         let expr = col("c1").gt_eq(lit(1));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
         // test column on the right
         let expr = lit(1).lt_eq(col("c1"));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1347,13 +1347,13 @@ mod tests {
         let expr = col("c1").lt(lit(1));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         // test column on the right
         let expr = lit(1).gt(col("c1"));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1367,12 +1367,12 @@ mod tests {
         let expr = col("c1").lt_eq(lit(1));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
         // test column on the right
         let expr = lit(1).gt_eq(col("c1"));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1389,7 +1389,7 @@ mod tests {
         let expected_expr = "c1_min < Int32(1) AND Boolean(true)";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1405,7 +1405,7 @@ mod tests {
         let expected_expr = "c1_min < Int32(1) OR Boolean(true)";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1418,7 +1418,7 @@ mod tests {
         let expr = col("c1").not();
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1431,7 +1431,7 @@ mod tests {
         let expr = col("c1").not();
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1444,7 +1444,7 @@ mod tests {
         let expr = col("c1");
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1459,7 +1459,7 @@ mod tests {
         let expr = col("c1").lt(lit(true));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1478,7 +1478,7 @@ mod tests {
         let expected_expr = "c1_min < Int32(1) AND (c2_min <= Int32(2) AND Int32(2) <= c2_max OR c2_min <= Int32(3) AND Int32(3) <= c2_max)";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut required_columns)?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
         // c1 < 1 should add c1_min
         let c1_min_field = Field::new("c1_min", DataType::Int32, false);
         assert_eq!(
@@ -1517,7 +1517,7 @@ mod tests {
         let expected_expr = "c1_min <= Int32(1) AND Int32(1) <= c1_max OR c1_min <= Int32(2) AND Int32(2) <= c1_max OR c1_min <= Int32(3) AND Int32(3) <= c1_max";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1537,7 +1537,7 @@ mod tests {
         let expected_expr = "Boolean(true)";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1559,7 +1559,7 @@ mod tests {
         AND (c1_min != Int32(3) OR Int32(3) != c1_max)";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1574,13 +1574,13 @@ mod tests {
         let expr = cast(col("c1"), DataType::Int64).eq(lit(ScalarValue::Int64(Some(1))));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         // test column on the right
         let expr = lit(ScalarValue::Int64(Some(1))).eq(cast(col("c1"), DataType::Int64));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         let expected_expr = "TRY_CAST(c1_max AS Int64) > Int64(1)";
 
@@ -1589,14 +1589,14 @@ mod tests {
             try_cast(col("c1"), DataType::Int64).gt(lit(ScalarValue::Int64(Some(1))));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         // test column on the right
         let expr =
             lit(ScalarValue::Int64(Some(1))).lt(try_cast(col("c1"), DataType::Int64));
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
@@ -1617,7 +1617,7 @@ mod tests {
         let expected_expr = "CAST(c1_min AS Int64) <= Int64(1) AND Int64(1) <= CAST(c1_max AS Int64) OR CAST(c1_min AS Int64) <= Int64(2) AND Int64(2) <= CAST(c1_max AS Int64) OR CAST(c1_min AS Int64) <= Int64(3) AND Int64(3) <= CAST(c1_max AS Int64)";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         let expr = Expr::InList {
             expr: Box::new(cast(col("c1"), DataType::Int64)),
@@ -1634,7 +1634,7 @@ mod tests {
         AND (CAST(c1_min AS Int64) != Int64(3) OR Int64(3) != CAST(c1_max AS Int64))";
         let predicate_expr =
             build_predicate_expression(&expr, &schema, &mut RequiredStatColumns::new())?;
-        assert_eq!(format!("{:?}", predicate_expr), expected_expr);
+        assert_eq!(format!("{predicate_expr:?}"), expected_expr);
 
         Ok(())
     }
