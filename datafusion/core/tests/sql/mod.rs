@@ -130,7 +130,7 @@ where
             if l.is_nan() || r.is_nan() {
                 assert!(l.is_nan() && r.is_nan());
             } else if (l - r).abs() > 2.0 * f64::EPSILON {
-                panic!("{} != {}", l, r)
+                panic!("{l} != {r}")
             }
         });
 }
@@ -526,7 +526,7 @@ async fn register_tpch_csv(ctx: &SessionContext, table: &str) -> Result<()> {
 
     ctx.register_csv(
         table,
-        format!("tests/tpch-csv/{}.csv", table).as_str(),
+        format!("tests/tpch-csv/{table}.csv").as_str(),
         CsvReadOptions::new().schema(&schema),
     )
     .await?;
@@ -580,7 +580,16 @@ async fn register_tpch_csv_data(
                 DataType::Date32 => {
                     let sb = col.as_any_mut().downcast_mut::<Date32Builder>().unwrap();
                     let dt = NaiveDate::parse_from_str(val.trim(), "%Y-%m-%d").unwrap();
-                    let dt = dt.sub(NaiveDate::from_ymd(1970, 1, 1)).num_days() as i32;
+                    let dt = dt
+                        .sub(
+                            NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(
+                                DataFusionError::Internal(
+                                    "Couldn't convert date combination to NaiveDate"
+                                        .to_string(),
+                                ),
+                            )?,
+                        )
+                        .num_days() as i32;
                     sb.append_value(dt);
                 }
                 DataType::Int32 => {
@@ -653,9 +662,8 @@ async fn register_aggregate_csv_by_sql(ctx: &SessionContext) {
     )
     STORED AS CSV
     WITH HEADER ROW
-    LOCATION '{}/csv/aggregate_test_100.csv'
-    ",
-            testdata
+    LOCATION '{testdata}/csv/aggregate_test_100.csv'
+    "
         ))
         .await
         .expect("Creating dataframe for CREATE EXTERNAL TABLE");
@@ -743,7 +751,7 @@ async fn register_aggregate_csv(ctx: &SessionContext) -> Result<()> {
     let schema = test_util::aggr_test_schema();
     ctx.register_csv(
         "aggregate_test_100",
-        &format!("{}/csv/aggregate_test_100.csv", testdata),
+        &format!("{testdata}/csv/aggregate_test_100.csv"),
         CsvReadOptions::new().schema(&schema),
     )
     .await?;
@@ -777,10 +785,10 @@ async fn try_execute_to_batches(
 
 /// Execute query and return results as a Vec of RecordBatches
 async fn execute_to_batches(ctx: &SessionContext, sql: &str) -> Vec<RecordBatch> {
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx
         .create_logical_plan(sql)
-        .map_err(|e| format!("{:?} at {}", e, msg))
+        .map_err(|e| format!("{e:?} at {msg}"))
         .unwrap();
     let logical_schema = plan.schema();
 
@@ -789,28 +797,25 @@ async fn execute_to_batches(ctx: &SessionContext, sql: &str) -> Vec<RecordBatch>
     // and we want to avoid double-optimization as a consequence. So we just construct
     // it here to make sure that it doesn't fail at this step and get the optimized
     // schema (to assert later that the logical and optimized schemas are the same).
-    let msg = format!("Optimizing logical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Optimizing logical plan for '{sql}': {plan:?}");
     let optimized_logical_plan = ctx
         .optimize(&plan)
-        .map_err(|e| format!("{:?} at {}", e, msg))
+        .map_err(|e| format!("{e:?} at {msg}"))
         .unwrap();
     let optimized_logical_schema = optimized_logical_plan.schema();
 
-    let msg = format!(
-        "Creating physical plan for '{}': {:?}",
-        sql, optimized_logical_plan
-    );
+    let msg = format!("Creating physical plan for '{sql}': {optimized_logical_plan:?}");
     let plan = ctx
         .create_physical_plan(&plan)
         .await
-        .map_err(|e| format!("{:?} at {}", e, msg))
+        .map_err(|e| format!("{e:?} at {msg}"))
         .unwrap();
 
-    let msg = format!("Executing physical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Executing physical plan for '{sql}': {plan:?}");
     let task_ctx = ctx.task_ctx();
     let results = collect(plan, task_ctx)
         .await
-        .map_err(|e| format!("{:?} at {}", e, msg))
+        .map_err(|e| format!("{e:?} at {msg}"))
         .unwrap();
 
     assert_eq!(logical_schema.as_ref(), optimized_logical_schema.as_ref());
@@ -868,7 +873,7 @@ fn populate_csv_partitions(
 
     // generate a partitioned file
     for partition in 0..partition_count {
-        let filename = format!("partition-{}.{}", partition, file_extension);
+        let filename = format!("partition-{partition}.{file_extension}");
         let file_path = tmp_dir.path().join(&filename);
         let mut file = File::create(file_path)?;
 
@@ -974,7 +979,7 @@ async fn register_alltypes_parquet(ctx: &SessionContext) {
     let testdata = datafusion::test_util::parquet_test_data();
     ctx.register_parquet(
         "alltypes_plain",
-        &format!("{}/alltypes_plain.parquet", testdata),
+        &format!("{testdata}/alltypes_plain.parquet"),
         ParquetReadOptions::default(),
     )
     .await
@@ -1149,7 +1154,7 @@ pub fn make_timestamps() -> RecordBatch {
     let names = ts_nanos
         .iter()
         .enumerate()
-        .map(|(i, _)| format!("Row {}", i))
+        .map(|(i, _)| format!("Row {i}"))
         .collect::<Vec<_>>();
 
     let arr_nanos = TimestampNanosecondArray::from(ts_nanos);

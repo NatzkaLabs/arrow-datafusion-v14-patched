@@ -69,7 +69,7 @@ fn optimize(plan: &LogicalPlan) -> Result<LogicalPlan> {
                     .iter()
                     .enumerate()
                     .map(|(i, group_expr)| {
-                        let alias_str = format!("group_alias_{}", i);
+                        let alias_str = format!("group_alias_{i}");
                         let alias_expr = group_expr.clone().alias(&alias_str);
                         group_expr_alias.push((alias_str, schema.fields()[i].clone()));
                         alias_expr
@@ -308,7 +308,7 @@ mod tests {
             .aggregate(vec![grouping_set], vec![count_distinct(col("c"))])?
             .build()?;
 
-        println!("{:?}", plan);
+        println!("{plan:?}");
 
         // Should not be optimized
         let expected = "Aggregate: groupBy=[[CUBE (test.a, test.b)]], aggr=[[COUNT(DISTINCT test.c)]] [a:UInt32, b:UInt32, COUNT(DISTINCT test.c):Int64;N]\

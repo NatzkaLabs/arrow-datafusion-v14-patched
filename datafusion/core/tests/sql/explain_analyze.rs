@@ -41,7 +41,7 @@ async fn explain_analyze_baseline_metrics() {
                  UNION ALL \
                SELECT lead(c1, 1) OVER () as cnt FROM (select 1 as c1) AS b \
                LIMIT 3";
-    println!("running query: {}", sql);
+    println!("running query: {sql}");
     let plan = ctx.create_logical_plan(sql).unwrap();
     let plan = ctx.optimize(&plan).unwrap();
     let physical_plan = ctx.create_physical_plan(&plan).await.unwrap();
@@ -50,7 +50,7 @@ async fn explain_analyze_baseline_metrics() {
     let formatted = arrow::util::pretty::pretty_format_batches(&results)
         .unwrap()
         .to_string();
-    println!("Query Output:\n\n{}", formatted);
+    println!("Query Output:\n\n{formatted}");
 
     assert_metrics!(
         &formatted,
@@ -186,11 +186,11 @@ async fn csv_explain_plans() {
 
     // Logical plan
     // Create plan
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx.create_logical_plan(sql).expect(&msg);
     let logical_schema = plan.schema();
     //
-    println!("SQL: {}", sql);
+    println!("SQL: {sql}");
     //
     // Verify schema
     let expected = vec![
@@ -203,8 +203,7 @@ async fn csv_explain_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // Verify the text format of the plan
@@ -218,8 +217,7 @@ async fn csv_explain_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // verify the grahviz format of the plan
@@ -255,13 +253,12 @@ async fn csv_explain_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     // Optimized logical plan
     //
-    let msg = format!("Optimizing logical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Optimizing logical plan for '{sql}': {plan:?}");
     let plan = ctx.optimize(&plan).expect(&msg);
     let optimized_logical_schema = plan.schema();
     // Both schema has to be the same
@@ -278,8 +275,7 @@ async fn csv_explain_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // Verify the text format of the plan
@@ -293,8 +289,7 @@ async fn csv_explain_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // verify the grahviz format of the plan
@@ -330,17 +325,16 @@ async fn csv_explain_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     // Physical plan
     // Create plan
-    let msg = format!("Creating physical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Creating physical plan for '{sql}': {plan:?}");
     let plan = ctx.create_physical_plan(&plan).await.expect(&msg);
     //
     // Execute plan
-    let msg = format!("Executing physical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Executing physical plan for '{sql}': {plan:?}");
     let task_ctx = ctx.task_ctx();
     let results = collect(plan, task_ctx).await.expect(&msg);
     let actual = result_vec(&results);
@@ -409,11 +403,11 @@ async fn csv_explain_verbose_plans() {
 
     // Logical plan
     // Create plan
-    let msg = format!("Creating logical plan for '{}'", sql);
+    let msg = format!("Creating logical plan for '{sql}'");
     let plan = ctx.create_logical_plan(sql).expect(&msg);
     let logical_schema = plan.schema();
     //
-    println!("SQL: {}", sql);
+    println!("SQL: {sql}");
 
     //
     // Verify schema
@@ -427,8 +421,7 @@ async fn csv_explain_verbose_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // Verify the text format of the plan
@@ -442,8 +435,7 @@ async fn csv_explain_verbose_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // verify the grahviz format of the plan
@@ -479,13 +471,12 @@ async fn csv_explain_verbose_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     // Optimized logical plan
     //
-    let msg = format!("Optimizing logical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Optimizing logical plan for '{sql}': {plan:?}");
     let plan = ctx.optimize(&plan).expect(&msg);
     let optimized_logical_schema = plan.schema();
     // Both schema has to be the same
@@ -502,8 +493,7 @@ async fn csv_explain_verbose_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // Verify the text format of the plan
@@ -517,8 +507,7 @@ async fn csv_explain_verbose_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
     //
     // verify the grahviz format of the plan
@@ -554,17 +543,16 @@ async fn csv_explain_verbose_plans() {
     let actual: Vec<&str> = formatted.trim().lines().collect();
     assert_eq!(
         expected, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected, actual
+        "\n\nexpected:\n\n{expected:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     // Physical plan
     // Create plan
-    let msg = format!("Creating physical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Creating physical plan for '{sql}': {plan:?}");
     let plan = ctx.create_physical_plan(&plan).await.expect(&msg);
     //
     // Execute plan
-    let msg = format!("Executing physical plan for '{}': {:?}", sql, plan);
+    let msg = format!("Executing physical plan for '{sql}': {plan:?}");
     let task_ctx = ctx.task_ctx();
     let results = collect(plan, task_ctx).await.expect(&msg);
     let actual = result_vec(&results);
@@ -708,8 +696,7 @@ async fn test_physical_plan_display_indent() {
         .collect::<Vec<_>>();
     assert_eq!(
         expected, actual,
-        "expected:\n{:#?}\nactual:\n\n{:#?}\n",
-        expected, actual
+        "expected:\n{expected:#?}\nactual:\n\n{actual:#?}\n"
     );
 }
 
@@ -759,8 +746,7 @@ async fn test_physical_plan_display_indent_multi_children() {
 
     assert_eq!(
         expected, actual,
-        "expected:\n{:#?}\nactual:\n\n{:#?}\n",
-        expected, actual
+        "expected:\n{expected:#?}\nactual:\n\n{actual:#?}\n"
     );
 }
 

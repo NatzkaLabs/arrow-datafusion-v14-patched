@@ -99,15 +99,14 @@ fn plan_key(key: SQLExpr) -> Result<ScalarValue> {
     let scalar = match key {
         SQLExpr::Value(Value::Number(s, _)) => ScalarValue::Int64(Some(
             s.parse()
-                .map_err(|_| ParserError(format!("Cannot parse {} as i64.", s)))?,
+                .map_err(|_| ParserError(format!("Cannot parse {s} as i64.")))?,
         )),
         SQLExpr::Value(Value::SingleQuotedString(s) | Value::DoubleQuotedString(s)) => {
             ScalarValue::Utf8(Some(s))
         }
         _ => {
             return Err(DataFusionError::SQL(ParserError(format!(
-                "Unsuported index key expression: {:?}",
-                key
+                "Unsuported index key expression: {key:?}"
             ))));
         }
     };
@@ -207,7 +206,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                         .project(
                             plan.schema().fields().iter().zip(columns.into_iter()).map(
                                 |(field, ident)| {
-                                    col(field.name()).alias(&normalize_ident(&ident))
+                                    col(field.name()).alias(normalize_ident(&ident))
                                 },
                             ),
                         )
@@ -300,8 +299,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                 filter,
             } => self.show_columns_to_plan(extended, full, &table_name, filter.as_ref()),
             _ => Err(DataFusionError::NotImplemented(format!(
-                "Unsupported SQL statement: {:?}",
-                sql
+                "Unsupported SQL statement: {sql:?}"
             ))),
         }
     }
@@ -377,8 +375,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                 let cte_name = normalize_ident(&cte.alias.name);
                 if ctes.contains_key(&cte_name) {
                     return Err(DataFusionError::SQL(ParserError(format!(
-                        "WITH query name {:?} specified more than once",
-                        cte_name
+                        "WITH query name {cte_name:?} specified more than once"
                     ))));
                 }
                 // create logical plan & pass backreferencing CTEs
@@ -446,8 +443,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             }
             SetExpr::Query(q) => self.query_to_plan(*q, ctes),
             _ => Err(DataFusionError::NotImplemented(format!(
-                "Query {} not implemented yet",
-                set_expr
+                "Query {set_expr} not implemented yet"
             ))),
         }
     }
@@ -637,8 +633,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             }
             JoinOperator::CrossJoin => self.parse_cross_join(left, &right),
             other => Err(DataFusionError::NotImplemented(format!(
-                "Unsupported JOIN operator {:?}",
-                other
+                "Unsupported JOIN operator {other:?}"
             ))),
         }
     }
@@ -714,7 +709,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             JoinConstraint::Using(idents) => {
                 let keys: Vec<Column> = idents
                     .into_iter()
-                    .map(|x| Column::from_name(&normalize_ident(&x)))
+                    .map(|x| Column::from_name(normalize_ident(&x)))
                     .collect();
                 LogicalPlanBuilder::from(left)
                     .join_using(&right, join_type, keys)?
@@ -805,8 +800,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             // @todo Support TableFactory::TableFunction?
             _ => {
                 return Err(DataFusionError::NotImplemented(format!(
-                    "Unsupported ast node {:?} in create_relation",
-                    relation
+                    "Unsupported ast node {relation:?} in create_relation"
                 )));
             }
         };
@@ -837,7 +831,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             Ok(LogicalPlanBuilder::from(plan.clone())
                 .project_with_alias(
                     plan.schema().fields().iter().zip(columns_alias.iter()).map(
-                        |(field, ident)| col(field.name()).alias(&normalize_ident(ident)),
+                        |(field, ident)| col(field.name()).alias(normalize_ident(ident)),
                     ),
                     Some(normalize_ident(&alias.name)),
                 )?
@@ -1364,8 +1358,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                 Expr::Literal(ScalarValue::Int64(Some(s))) => {
                     if s < 0 {
                         return Err(DataFusionError::Plan(format!(
-                            "Offset must be >= 0, '{}' was provided.",
-                            s
+                            "Offset must be >= 0, '{s}' was provided."
                         )));
                     }
                     Ok(s as usize)
@@ -1531,7 +1524,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                 expand_wildcard(plan.schema().as_ref(), plan)
             }
             SelectItem::QualifiedWildcard(ref object_name) => {
-                let qualifier = format!("{}", object_name);
+                let qualifier = format!("{object_name}");
                 // do not expand from outer schema
                 expand_qualified_wildcard(&qualifier, plan.schema().as_ref(), plan)
             }
@@ -1562,7 +1555,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                         .find(|field| match field.qualifier() {
                             Some(field_q) => {
                                 field.name() == &col.name
-                                    && field_q.ends_with(&format!(".{}", q))
+                                    && field_q.ends_with(&format!(".{q}"))
                             }
                             _ => false,
                         }) {
@@ -1599,8 +1592,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             }
             FunctionArg::Unnamed(FunctionArgExpr::Wildcard) => Ok(Expr::Wildcard),
             _ => Err(DataFusionError::NotImplemented(format!(
-                "Unsupported qualified wildcard argument: {:?}",
-                sql
+                "Unsupported qualified wildcard argument: {sql:?}"
             ))),
         }
     }
@@ -1638,8 +1630,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             BinaryOperator::PGBitwiseShiftLeft => Ok(Operator::BitwiseShiftLeft),
             BinaryOperator::StringConcat => Ok(Operator::StringConcat),
             _ => Err(DataFusionError::NotImplemented(format!(
-                "Unsupported SQL binary operator {:?}",
-                op
+                "Unsupported SQL binary operator {op:?}"
             ))),
         }?;
 
@@ -1672,8 +1663,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                             .parse::<f64>()
                             .map_err(|_e| {
                                 DataFusionError::Internal(format!(
-                                    "negative operator can be only applied to integer and float operands, got: {}",
-                                    n))
+                                    "negative operator can be only applied to integer and float operands, got: {n}"))
                             })?)),
                     },
                     // not a literal, apply negative operator on expression
@@ -1681,8 +1671,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                 }
             }
             _ => Err(DataFusionError::NotImplemented(format!(
-                "Unsupported SQL unary operator {:?}",
-                op
+                "Unsupported SQL unary operator {op:?}"
             ))),
         }
     }
@@ -1733,8 +1722,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                             convert_data_type(&data_type)?,
                         ))),
                         other => Err(DataFusionError::NotImplemented(format!(
-                            "Unsupported value {:?} in a values list expression",
-                            other
+                            "Unsupported value {other:?} in a values list expression"
                         ))),
                     })
                     .collect::<Result<Vec<_>>>()
@@ -1757,7 +1745,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             SQLExpr::Extract { field, expr } => Ok(Expr::ScalarFunction {
                 fun: BuiltinScalarFunction::DatePart,
                 args: vec![
-                    Expr::Literal(ScalarValue::Utf8(Some(format!("{}", field)))),
+                    Expr::Literal(ScalarValue::Utf8(Some(format!("{field}")))),
                     self.sql_expr_to_logical_expr(*expr, schema, ctes)?,
                 ],
             }),
@@ -1785,8 +1773,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                         .get_variable_type(&var_names)
                         .ok_or_else(|| {
                             DataFusionError::Execution(format!(
-                                "variable {:?} has no type information",
-                                var_names
+                                "variable {var_names:?} has no type information"
                             ))
                         })?;
                     Ok(Expr::ScalarVariable(ty, var_names))
@@ -1807,8 +1794,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                     plan_indexed(col(&normalize_ident(id)), keys)
                 } else {
                     Err(DataFusionError::NotImplemented(format!(
-                        "map access requires an identifier, found column {} instead",
-                        column
+                        "map access requires an identifier, found column {column} instead"
                     )))
                 }
             }
@@ -1827,8 +1813,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                         .get_variable_type(&var_names)
                         .ok_or_else(|| {
                             DataFusionError::Execution(format!(
-                                "variable {:?} has no type information",
-                                var_names
+                                "variable {var_names:?} has no type information"
                             ))
                         })?;
                     Ok(Expr::ScalarVariable(ty, var_names))
@@ -1861,8 +1846,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                             }
                         }
                         _ => Err(DataFusionError::NotImplemented(format!(
-                            "Unsupported compound identifier '{:?}'",
-                            var_names,
+                            "Unsupported compound identifier '{var_names:?}'"
                         ))),
                     }
                 }
@@ -2081,8 +2065,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                         };
 
                         return Err(DataFusionError::Plan(format!(
-                            "Substring without for/from is not valid {:?}",
-                            orig_sql
+                            "Substring without for/from is not valid {orig_sql:?}"
                         )));
                     }
                 };
@@ -2249,8 +2232,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                             Ok(Expr::AggregateUDF { fun: fm, args, filter: None })
                         }
                         _ => Err(DataFusionError::Plan(format!(
-                            "Invalid function '{}'",
-                            name
+                            "Invalid function '{name}'"
                         ))),
                     },
                 }
@@ -2277,8 +2259,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             SQLExpr::Subquery(subquery) => self.parse_scalar_subquery(&subquery, schema, ctes),
 
             _ => Err(DataFusionError::NotImplemented(format!(
-                "Unsupported ast node in sqltorel: {:?}",
-                sql
+                "Unsupported ast node in sqltorel: {sql:?}"
             ))),
         }
     }
@@ -2381,22 +2362,19 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
     ) -> Result<Expr> {
         if leading_precision.is_some() {
             return Err(DataFusionError::NotImplemented(format!(
-                "Unsupported Interval Expression with leading_precision {:?}",
-                leading_precision
+                "Unsupported Interval Expression with leading_precision {leading_precision:?}"
             )));
         }
 
         if last_field.is_some() {
             return Err(DataFusionError::NotImplemented(format!(
-                "Unsupported Interval Expression with last_field {:?}",
-                last_field
+                "Unsupported Interval Expression with last_field {last_field:?}"
             )));
         }
 
         if fractional_seconds_precision.is_some() {
             return Err(DataFusionError::NotImplemented(format!(
-                "Unsupported Interval Expression with fractional_seconds_precision {:?}",
-                fractional_seconds_precision
+                "Unsupported Interval Expression with fractional_seconds_precision {fractional_seconds_precision:?}"
             )));
         }
 
@@ -2407,8 +2385,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             ) => s,
             _ => {
                 return Err(DataFusionError::NotImplemented(format!(
-                    "Unsupported interval argument. Expected string literal, got: {:?}",
-                    value
+                    "Unsupported interval argument. Expected string literal, got: {value:?}"
                 )));
             }
         };
@@ -2443,8 +2420,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             String::from("SELECT name, setting FROM information_schema.df_settings WHERE name = 'datafusion.execution.time_zone'")
         } else {
             format!(
-                "SELECT name, setting FROM information_schema.df_settings WHERE name = '{}'",
-                variable
+                "SELECT name, setting FROM information_schema.df_settings WHERE name = '{variable}'"
             )
         };
 
@@ -2508,8 +2484,8 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             },
             // for capture signed number e.g. +8, -8
             SQLExpr::UnaryOp { op, expr } => match op {
-                UnaryOperator::Plus => format!("+{}", expr),
-                UnaryOperator::Minus => format!("-{}", expr),
+                UnaryOperator::Plus => format!("+{expr}"),
+                UnaryOperator::Minus => format!("-{expr}"),
                 _ => {
                     return Err(DataFusionError::Plan(format!(
                         "Unspported Value {}",
@@ -2577,8 +2553,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
         };
 
         let query = format!(
-            "SELECT {} FROM information_schema.columns WHERE {}",
-            select_list, where_clause
+            "SELECT {select_list} FROM information_schema.columns WHERE {where_clause}"
         );
 
         let mut rewrite = DFParser::parse_sql(&query)?;
@@ -2615,8 +2590,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             .join(" AND ");
 
         let query = format!(
-            "SELECT table_catalog, table_schema, table_name, definition FROM information_schema.views WHERE {}",
-            where_clause
+            "SELECT table_catalog, table_schema, table_name, definition FROM information_schema.views WHERE {where_clause}"
         );
 
         let mut rewrite = DFParser::parse_sql(&query)?;
@@ -2648,8 +2622,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
                 }
                 _ => {
                     return Err(DataFusionError::NotImplemented(format!(
-                        "Arrays with elements other than literal are not supported: {}",
-                        value
+                        "Arrays with elements other than literal are not supported: {value}"
                     )));
                 }
             }
@@ -2662,8 +2635,7 @@ impl<'a, S: ContextProvider> SqlToRel<'a, S> {
             Ok(lit(ScalarValue::new_list(None, DataType::Utf8)))
         } else if data_types.len() > 1 {
             Err(DataFusionError::NotImplemented(format!(
-                "Arrays with different types are not supported: {:?}",
-                data_types,
+                "Arrays with different types are not supported: {data_types:?}"
             )))
         } else {
             let data_type = values[0].get_datatype();
@@ -2848,8 +2820,7 @@ pub fn convert_simple_data_type(sql_type: &SQLDataType) -> Result<DataType> {
             } else {
                 // We dont support TIMETZ and TIME WITH TIME ZONE for now
                 Err(DataFusionError::NotImplemented(format!(
-                    "Unsupported SQL type {:?}",
-                    sql_type
+                    "Unsupported SQL type {sql_type:?}"
                 )))
             }
         }
@@ -2887,8 +2858,7 @@ pub fn convert_simple_data_type(sql_type: &SQLDataType) -> Result<DataType> {
         | SQLDataType::CharacterLargeObject(_)
         | SQLDataType::CharLargeObject(_)
         | SQLDataType::Clob(_) => Err(DataFusionError::NotImplemented(format!(
-            "Unsupported SQL type {:?}",
-            sql_type
+            "Unsupported SQL type {sql_type:?}"
         ))),
     }
 }
@@ -2915,10 +2885,7 @@ fn parse_sql_number(n: &str) -> Result<Expr> {
         // if parsing as i64 fails try f64
         .or_else(|_| n.parse::<f64>().map(lit))
         .map_err(|_| {
-            DataFusionError::from(ParserError(format!(
-                "Cannot parse {} as i64 or f64",
-                n
-            )))
+            DataFusionError::from(ParserError(format!("Cannot parse {n} as i64 or f64")))
         })
 }
 
@@ -2982,7 +2949,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 r##"Internal("Decimal(precision = 0, scale = 0) should satisty `0 < precision <= 38`, and `scale <= precision`.")"##,
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
         // precision > 38
@@ -2991,7 +2958,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 r##"Internal("Decimal(precision = 39, scale = 0) should satisty `0 < precision <= 38`, and `scale <= precision`.")"##,
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
         // precision < scale
@@ -3000,7 +2967,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 r##"Internal("Decimal(precision = 5, scale = 10) should satisty `0 < precision <= 38`, and `scale <= precision`.")"##,
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
     }
@@ -3018,7 +2985,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"person.age\" at position 0 and \"person.age\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3028,7 +2995,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"person.age\" at position 3 and \"person.age\" at position 8 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3216,7 +3183,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Source table contains 3 columns but only 2 names given as column alias\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3239,7 +3206,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"HAVING clause references column(s) not provided by the select: Expression person.first_name could not be resolved from available columns: person.id, person.age\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3253,7 +3220,7 @@ mod tests {
             "Plan(\"HAVING clause references column(s) not provided by the select: \
             Expression person.age could not be resolved from available columns: \
             person.id, person.age + Int64(1)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3265,7 +3232,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.first_name could not be resolved from available columns: MAX(person.age)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3303,7 +3270,7 @@ mod tests {
             "Plan(\"HAVING clause references non-aggregate values: \
             Expression person.first_name could not be resolved from available columns: \
             COUNT(UInt8(1))\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3427,7 +3394,7 @@ mod tests {
             "Plan(\"HAVING clause references non-aggregate values: \
             Expression person.last_name could not be resolved from available columns: \
             person.first_name, MAX(person.age)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3580,7 +3547,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"MIN(person.age)\" at position 0 and \"MIN(person.age)\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3621,7 +3588,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"MIN(person.age) AS a\" at position 0 and \"MIN(person.age) AS a\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3651,7 +3618,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"person.state AS a\" at position 0 and \"MIN(person.age) AS a\" at position 1 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3671,7 +3638,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!("Schema error: No field named 'doesnotexist'. Valid fields are 'SUM(person.age)', \
         'person'.'id', 'person'.'first_name', 'person'.'last_name', 'person'.'age', 'person'.'state', \
-        'person'.'salary', 'person'.'birth_date', 'person'.'😀'.", format!("{}", err));
+        'person'.'salary', 'person'.'birth_date', 'person'.'😀'.", format!("{err}"));
     }
 
     #[test]
@@ -3687,7 +3654,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r#"NotImplemented("Interval field value out of range: \"100000000000000000 day\"")"#,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3715,7 +3682,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r#"NotImplemented("Recursive CTEs are not supported")"#,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3725,7 +3692,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r#"NotImplemented("Arrays with elements other than literal are not supported: now()")"#,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3761,14 +3728,14 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.state could not be resolved from available columns: Int64(0), MIN(person.age)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
 
         let sql2 = "SELECT state, MIN(age) FROM person GROUP BY 5";
         let err2 = logical_plan(sql2).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.state could not be resolved from available columns: Int64(5), MIN(person.age)\")",
-            format!("{:?}", err2)
+            format!("{err2:?}")
         );
     }
 
@@ -3788,7 +3755,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             r##"Plan("Projections require unique expression names but the expression \"MIN(person.age)\" at position 1 and \"MIN(person.age)\" at position 2 have the same name. Consider aliasing (\"AS\") one of them.")"##,
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3849,7 +3816,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Projection references non-aggregate values: Expression person.age could not be resolved from available columns: person.age + Int64(1), MIN(person.first_name)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -3859,7 +3826,7 @@ mod tests {
         let sql = "SELECT age, MIN(first_name) FROM person GROUP BY age + 1";
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!("Plan(\"Projection references non-aggregate values: Expression person.age could not be resolved from available columns: person.age + Int64(1), MIN(person.first_name)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4009,7 +3976,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Order by index starts at 1 for column indexes\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4019,7 +3986,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Order by column out of bounds, specified: 2, max: 1\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4116,7 +4083,7 @@ mod tests {
             "Plan(\"Projection references non-aggregate values: \
             Expression aggregate_test_100.c13 could not be resolved from available columns: \
             aggregate_test_100.c1, MIN(aggregate_test_100.c12)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4166,7 +4133,7 @@ mod tests {
             let err = logical_plan(sql).expect_err("query should have failed");
             assert_eq!(
                 "Plan(\"File compression type can be specified for CSV/JSON files.\")",
-                format!("{:?}", err)
+                format!("{err:?}")
             );
         }
     }
@@ -4178,7 +4145,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"Column definitions can not be specified for PARQUET files.\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4395,7 +4362,7 @@ mod tests {
             not compatible with column IntervalMonthDayNano\
             (\\\"950737950189618795196236955648\\\") \
             (type: Interval(MonthDayNano))\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4501,7 +4468,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"UNION Column a (type: Boolean) is not compatible with column a (type: Utf8)\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4638,7 +4605,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"With window frame of type RANGE, the order by expression must be of length 1, got 0\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4649,7 +4616,7 @@ mod tests {
         let err = logical_plan(sql).expect_err("query should have failed");
         assert_eq!(
             "Plan(\"With window frame of type RANGE, the order by expression must be of length 1, got 2\")",
-            format!("{:?}", err)
+            format!("{err:?}")
         );
     }
 
@@ -4907,7 +4874,7 @@ mod tests {
     /// Create logical plan, write with formatter, compare to expected output
     fn quick_test(sql: &str, expected: &str) {
         let plan = logical_plan(sql).unwrap();
-        assert_eq!(format!("{:?}", plan), expected);
+        assert_eq!(format!("{plan:?}"), expected);
     }
 
     struct MockContextProvider {}
@@ -5055,7 +5022,7 @@ mod tests {
         let sql = "with a as (select * from person), a as (select * from orders) select * from a;";
         let expected = "SQL error: ParserError(\"WITH query name \\\"a\\\" specified more than once\")";
         let result = logical_plan(sql).err().unwrap();
-        assert_eq!(expected, format!("{}", result));
+        assert_eq!(expected, format!("{result}"));
     }
 
     #[test]
@@ -5289,7 +5256,7 @@ mod tests {
 
         let expected = "Error during planning: Source table contains 3 columns but only 1 names given as column alias";
         let result = logical_plan(sql).err().unwrap();
-        assert_eq!(expected, format!("{}", result));
+        assert_eq!(expected, format!("{result}"));
     }
 
     #[test]
@@ -5485,10 +5452,10 @@ mod tests {
     fn assert_field_not_found(err: DataFusionError, name: &str) {
         match err {
             DataFusionError::SchemaError { .. } => {
-                let msg = format!("{}", err);
-                let expected = format!("Schema error: No field named '{}'.", name);
+                let msg = format!("{err}");
+                let expected = format!("Schema error: No field named '{name}'.");
                 if !msg.starts_with(&expected) {
-                    panic!("error [{}] did not start with [{}]", msg, expected);
+                    panic!("error [{msg}] did not start with [{expected}]");
                 }
             }
             _ => panic!("assert_field_not_found wrong error type"),

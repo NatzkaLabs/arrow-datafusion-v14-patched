@@ -551,7 +551,9 @@ macro_rules! get_sign {
 
 #[inline]
 pub fn date32_add(days: i32, scalar: &ScalarValue, sign: i32) -> Result<i32> {
-    let epoch = NaiveDate::from_ymd(1970, 1, 1);
+    let epoch = NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(DataFusionError::Internal(
+        "Couldn't convert date combination to NaiveDate".to_string(),
+    ))?;
     let prior = epoch.add(Duration::days(days as i64));
     let posterior = do_date_math(prior, scalar, sign)?;
     Ok(posterior.sub(epoch).num_days() as i32)
@@ -559,7 +561,9 @@ pub fn date32_add(days: i32, scalar: &ScalarValue, sign: i32) -> Result<i32> {
 
 #[inline]
 pub fn date64_add(ms: i64, scalar: &ScalarValue, sign: i32) -> Result<i64> {
-    let epoch = NaiveDate::from_ymd(1970, 1, 1);
+    let epoch = NaiveDate::from_ymd_opt(1970, 1, 1).ok_or(DataFusionError::Internal(
+        "Couldn't convert date combination to NaiveDate".to_string(),
+    ))?;
     let prior = epoch.add(Duration::milliseconds(ms));
     let posterior = do_date_math(prior, scalar, sign)?;
     Ok(posterior.sub(epoch).num_milliseconds())
@@ -598,7 +602,11 @@ fn do_date_time_math(
     scalar: &ScalarValue,
     sign: i32,
 ) -> Result<NaiveDateTime> {
-    let prior = NaiveDateTime::from_timestamp(secs, nsecs);
+    let prior = NaiveDateTime::from_timestamp_opt(secs, nsecs).ok_or(
+        DataFusionError::Internal(
+            "Couldn't convert timestamp combination to NaiveDateTime".to_string(),
+        ),
+    )?;
     do_date_math(prior, scalar, sign)
 }
 
@@ -611,8 +619,7 @@ where
         ScalarValue::IntervalYearMonth(Some(i)) => shift_months(prior, *i * sign),
         ScalarValue::IntervalMonthDayNano(Some(i)) => add_m_d_nano(prior, *i, sign),
         other => Err(DataFusionError::Execution(format!(
-            "DateIntervalExpr does not support non-interval type {:?}",
-            other
+            "DateIntervalExpr does not support non-interval type {other:?}"
         )))?,
     })
 }
@@ -974,8 +981,7 @@ impl ScalarValue {
             return Ok(ScalarValue::Decimal128(Some(value), precision, scale));
         }
         Err(DataFusionError::Internal(format!(
-            "Can not new a decimal type ScalarValue for precision {} and scale {}",
-            precision, scale
+            "Can not new a decimal type ScalarValue for precision {precision} and scale {scale}"
         )))
     }
 
@@ -1088,8 +1094,7 @@ impl ScalarValue {
                 Ok(ScalarValue::Decimal128(Some(-v), *precision, *scale))
             }
             value => Err(DataFusionError::Internal(format!(
-                "Can not run arithmetic negative on scalar value {:?}",
-                value
+                "Can not run arithmetic negative on scalar value {value:?}"
             ))),
         }
     }
@@ -1499,8 +1504,7 @@ impl ScalarValue {
                         };
                     } else {
                         return Err(DataFusionError::Internal(format!(
-                            "Expected Struct but found: {}",
-                            scalar
+                            "Expected Struct but found: {scalar}"
                         )));
                     };
                 }
@@ -1525,13 +1529,12 @@ impl ScalarValue {
                             if &inner_key_type == key_type {
                                 Ok(*scalar)
                             } else {
-                                panic!("Expected inner key type of {} but found: {}, value was ({:?})", key_type, inner_key_type, scalar);
+                                panic!("Expected inner key type of {key_type} but found: {inner_key_type}, value was ({scalar:?})");
                             }
                         }
                         _ => {
                             Err(DataFusionError::Internal(format!(
-                                "Expected scalar of type {} but found: {} {:?}",
-                                value_type, scalar, scalar
+                                "Expected scalar of type {value_type} but found: {scalar} {scalar:?}"
                             )))
                         }
                     })
@@ -1549,7 +1552,7 @@ impl ScalarValue {
                     DataType::UInt16 => dict_from_values::<UInt16Type>(&values)?,
                     DataType::UInt32 => dict_from_values::<UInt32Type>(&values)?,
                     DataType::UInt64 => dict_from_values::<UInt64Type>(&values)?,
-                    _ => unreachable!("Invalid dictionary keys type: {:?}", key_type),
+                    _ => unreachable!("Invalid dictionary keys type: {key_type:?}"),
                 }
             }
             DataType::FixedSizeBinary(_) => {
@@ -1560,8 +1563,7 @@ impl ScalarValue {
                         } else {
                             Err(DataFusionError::Internal(format!(
                                 "Inconsistent types in ScalarValue::iter_to_array. \
-                                Expected {:?}, got {:?}",
-                                data_type, sv
+                                Expected {data_type:?}, got {sv:?}"
                             )))
                         }
                     })
@@ -1659,8 +1661,7 @@ impl ScalarValue {
                 }
             } else {
                 return Err(DataFusionError::Internal(format!(
-                    "Expected ScalarValue::List element. Received {:?}",
-                    scalar
+                    "Expected ScalarValue::List element. Received {scalar:?}"
                 )));
             }
         }
@@ -2130,8 +2131,7 @@ impl ScalarValue {
             }
             other => {
                 return Err(DataFusionError::NotImplemented(format!(
-                    "Can't create a scalar from array of type \"{:?}\"",
-                    other
+                    "Can't create a scalar from array of type \"{other:?}\""
                 )));
             }
         })
@@ -2512,8 +2512,7 @@ impl TryFrom<&DataType> for ScalarValue {
             DataType::Null => ScalarValue::Null,
             _ => {
                 return Err(DataFusionError::NotImplemented(format!(
-                    "Can't create a scalar from data_type \"{:?}\"",
-                    datatype
+                    "Can't create a scalar from data_type \"{datatype:?}\""
                 )));
             }
         })
@@ -2523,7 +2522,7 @@ impl TryFrom<&DataType> for ScalarValue {
 macro_rules! format_option {
     ($F:expr, $EXPR:expr) => {{
         match $EXPR {
-            Some(e) => write!($F, "{}", e),
+            Some(e) => write!($F, "{e}"),
             None => write!($F, "NULL"),
         }
     }};
@@ -2533,7 +2532,7 @@ impl fmt::Display for ScalarValue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             ScalarValue::Decimal128(v, p, s) => {
-                write!(f, "{:?},{:?},{:?}", v, p, s)?;
+                write!(f, "{v:?},{p:?},{s:?}")?;
             }
             ScalarValue::Boolean(e) => format_option!(f, e)?,
             ScalarValue::Float32(e) => format_option!(f, e)?,
@@ -2557,7 +2556,7 @@ impl fmt::Display for ScalarValue {
                     f,
                     "{}",
                     l.iter()
-                        .map(|v| format!("{}", v))
+                        .map(|v| format!("{v}"))
                         .collect::<Vec<_>>()
                         .join(",")
                 )?,
@@ -2568,7 +2567,7 @@ impl fmt::Display for ScalarValue {
                     f,
                     "{}",
                     l.iter()
-                        .map(|v| format!("{}", v))
+                        .map(|v| format!("{v}"))
                         .collect::<Vec<_>>()
                         .join(",")
                 )?,
@@ -2579,7 +2578,7 @@ impl fmt::Display for ScalarValue {
                     f,
                     "{}",
                     l.iter()
-                        .map(|v| format!("{}", v))
+                        .map(|v| format!("{v}"))
                         .collect::<Vec<_>>()
                         .join(",")
                 )?,
@@ -2590,7 +2589,7 @@ impl fmt::Display for ScalarValue {
                     f,
                     "{}",
                     l.iter()
-                        .map(|v| format!("{}", v))
+                        .map(|v| format!("{v}"))
                         .collect::<Vec<_>>()
                         .join(",")
                 )?,
@@ -2617,7 +2616,7 @@ impl fmt::Display for ScalarValue {
                 )?,
                 None => write!(f, "NULL")?,
             },
-            ScalarValue::Dictionary(_k, v) => write!(f, "{}", v)?,
+            ScalarValue::Dictionary(_k, v) => write!(f, "{v}")?,
             ScalarValue::Null => write!(f, "NULL")?,
         };
         Ok(())
@@ -2627,65 +2626,65 @@ impl fmt::Display for ScalarValue {
 impl fmt::Debug for ScalarValue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ScalarValue::Decimal128(_, _, _) => write!(f, "Decimal128({})", self),
-            ScalarValue::Boolean(_) => write!(f, "Boolean({})", self),
-            ScalarValue::Float32(_) => write!(f, "Float32({})", self),
-            ScalarValue::Float64(_) => write!(f, "Float64({})", self),
-            ScalarValue::Int8(_) => write!(f, "Int8({})", self),
-            ScalarValue::Int16(_) => write!(f, "Int16({})", self),
-            ScalarValue::Int32(_) => write!(f, "Int32({})", self),
-            ScalarValue::Int64(_) => write!(f, "Int64({})", self),
-            ScalarValue::UInt8(_) => write!(f, "UInt8({})", self),
-            ScalarValue::UInt16(_) => write!(f, "UInt16({})", self),
-            ScalarValue::UInt32(_) => write!(f, "UInt32({})", self),
-            ScalarValue::UInt64(_) => write!(f, "UInt64({})", self),
+            ScalarValue::Decimal128(_, _, _) => write!(f, "Decimal128({self})"),
+            ScalarValue::Boolean(_) => write!(f, "Boolean({self})"),
+            ScalarValue::Float32(_) => write!(f, "Float32({self})"),
+            ScalarValue::Float64(_) => write!(f, "Float64({self})"),
+            ScalarValue::Int8(_) => write!(f, "Int8({self})"),
+            ScalarValue::Int16(_) => write!(f, "Int16({self})"),
+            ScalarValue::Int32(_) => write!(f, "Int32({self})"),
+            ScalarValue::Int64(_) => write!(f, "Int64({self})"),
+            ScalarValue::UInt8(_) => write!(f, "UInt8({self})"),
+            ScalarValue::UInt16(_) => write!(f, "UInt16({self})"),
+            ScalarValue::UInt32(_) => write!(f, "UInt32({self})"),
+            ScalarValue::UInt64(_) => write!(f, "UInt64({self})"),
             ScalarValue::TimestampSecond(_, tz_opt) => {
-                write!(f, "TimestampSecond({}, {:?})", self, tz_opt)
+                write!(f, "TimestampSecond({self}, {tz_opt:?})")
             }
             ScalarValue::TimestampMillisecond(_, tz_opt) => {
-                write!(f, "TimestampMillisecond({}, {:?})", self, tz_opt)
+                write!(f, "TimestampMillisecond({self}, {tz_opt:?})")
             }
             ScalarValue::TimestampMicrosecond(_, tz_opt) => {
-                write!(f, "TimestampMicrosecond({}, {:?})", self, tz_opt)
+                write!(f, "TimestampMicrosecond({self}, {tz_opt:?})")
             }
             ScalarValue::TimestampNanosecond(_, tz_opt) => {
-                write!(f, "TimestampNanosecond({}, {:?})", self, tz_opt)
+                write!(f, "TimestampNanosecond({self}, {tz_opt:?})")
             }
-            ScalarValue::Utf8(None) => write!(f, "Utf8({})", self),
-            ScalarValue::Utf8(Some(_)) => write!(f, "Utf8(\"{}\")", self),
-            ScalarValue::LargeUtf8(None) => write!(f, "LargeUtf8({})", self),
-            ScalarValue::LargeUtf8(Some(_)) => write!(f, "LargeUtf8(\"{}\")", self),
-            ScalarValue::Binary(None) => write!(f, "Binary({})", self),
-            ScalarValue::Binary(Some(_)) => write!(f, "Binary(\"{}\")", self),
+            ScalarValue::Utf8(None) => write!(f, "Utf8({self})"),
+            ScalarValue::Utf8(Some(_)) => write!(f, "Utf8(\"{self}\")"),
+            ScalarValue::LargeUtf8(None) => write!(f, "LargeUtf8({self})"),
+            ScalarValue::LargeUtf8(Some(_)) => write!(f, "LargeUtf8(\"{self}\")"),
+            ScalarValue::Binary(None) => write!(f, "Binary({self})"),
+            ScalarValue::Binary(Some(_)) => write!(f, "Binary(\"{self}\")"),
             ScalarValue::FixedSizeBinary(size, None) => {
-                write!(f, "FixedSizeBinary({}, {})", size, self)
+                write!(f, "FixedSizeBinary({size}, {self})")
             }
             ScalarValue::FixedSizeBinary(size, Some(_)) => {
-                write!(f, "FixedSizeBinary({}, \"{}\")", size, self)
+                write!(f, "FixedSizeBinary({size}, \"{self}\")")
             }
-            ScalarValue::LargeBinary(None) => write!(f, "LargeBinary({})", self),
-            ScalarValue::LargeBinary(Some(_)) => write!(f, "LargeBinary(\"{}\")", self),
-            ScalarValue::List(_, _) => write!(f, "List([{}])", self),
-            ScalarValue::Date32(_) => write!(f, "Date32(\"{}\")", self),
-            ScalarValue::Date64(_) => write!(f, "Date64(\"{}\")", self),
-            ScalarValue::Time32Second(_) => write!(f, "Time32Second(\"{}\")", self),
+            ScalarValue::LargeBinary(None) => write!(f, "LargeBinary({self})"),
+            ScalarValue::LargeBinary(Some(_)) => write!(f, "LargeBinary(\"{self}\")"),
+            ScalarValue::List(_, _) => write!(f, "List([{self}])"),
+            ScalarValue::Date32(_) => write!(f, "Date32(\"{self}\")"),
+            ScalarValue::Date64(_) => write!(f, "Date64(\"{self}\")"),
+            ScalarValue::Time32Second(_) => write!(f, "Time32Second(\"{self}\")"),
             ScalarValue::Time32Millisecond(_) => {
-                write!(f, "Time32Millisecond(\"{}\")", self)
+                write!(f, "Time32Millisecond(\"{self}\")")
             }
             ScalarValue::Time64Microsecond(_) => {
-                write!(f, "Time64Microsecond(\"{}\")", self)
+                write!(f, "Time64Microsecond(\"{self}\")")
             }
             ScalarValue::Time64Nanosecond(_) => {
-                write!(f, "Time64Nanosecond(\"{}\")", self)
+                write!(f, "Time64Nanosecond(\"{self}\")")
             }
             ScalarValue::IntervalDayTime(_) => {
-                write!(f, "IntervalDayTime(\"{}\")", self)
+                write!(f, "IntervalDayTime(\"{self}\")")
             }
             ScalarValue::IntervalYearMonth(_) => {
-                write!(f, "IntervalYearMonth(\"{}\")", self)
+                write!(f, "IntervalYearMonth(\"{self}\")")
             }
             ScalarValue::IntervalMonthDayNano(_) => {
-                write!(f, "IntervalMonthDayNano(\"{}\")", self)
+                write!(f, "IntervalMonthDayNano(\"{self}\")")
             }
             ScalarValue::Struct(e, fields) => {
                 // Use Debug representation of field values
@@ -2702,7 +2701,7 @@ impl fmt::Debug for ScalarValue {
                     None => write!(f, "Struct(NULL)"),
                 }
             }
-            ScalarValue::Dictionary(k, v) => write!(f, "Dictionary({:?}, {:?})", k, v),
+            ScalarValue::Dictionary(k, v) => write!(f, "Dictionary({k:?}, {v:?})"),
             ScalarValue::Null => write!(f, "NULL"),
         }
     }
@@ -3369,16 +3368,13 @@ mod tests {
             println!("**** Test Case *****");
             let TestCase { array, scalars } = case;
             println!("Input array type: {}", array.data_type());
-            println!("Input scalars: {:#?}", scalars);
+            println!("Input scalars: {scalars:#?}");
             assert_eq!(array.len(), scalars.len());
 
             for (index, scalar) in scalars.into_iter().enumerate() {
                 assert!(
                     scalar.eq_array(&array, index),
-                    "Expected {:?} to be equal to {:?} at index {}",
-                    scalar,
-                    array,
-                    index
+                    "Expected {scalar:?} to be equal to {array:?} at index {index}"
                 );
 
                 // test that all other elements are *not* equal
@@ -3386,10 +3382,7 @@ mod tests {
                     if index != other_index {
                         assert!(
                             !scalar.eq_array(&array, other_index),
-                            "Expected {:?} to be NOT equal to {:?} at index {}",
-                            scalar,
-                            array,
-                            other_index
+                            "Expected {scalar:?} to be NOT equal to {array:?} at index {other_index}"                            
                         );
                     }
                 }
@@ -3526,13 +3519,13 @@ mod tests {
 
         // Check Display
         assert_eq!(
-            format!("{}", scalar),
+            format!("{scalar}"),
             String::from("{A:23,B:false,C:Hello,D:{e:2,f:3}}")
         );
 
         // Check Debug
         assert_eq!(
-            format!("{:?}", scalar),
+            format!("{scalar:?}"),
             String::from(
                 r#"Struct({A:Int32(23),B:Boolean(false),C:Utf8("Hello"),D:Struct({e:Int16(2),f:Int64(3)})})"#
             )
@@ -3578,7 +3571,7 @@ mod tests {
         // None version
         let none_scalar = ScalarValue::try_from(array.data_type()).unwrap();
         assert!(none_scalar.is_null());
-        assert_eq!(format!("{:?}", none_scalar), String::from("Struct(NULL)"));
+        assert_eq!(format!("{none_scalar:?}"), String::from("Struct(NULL)"));
 
         // Construct with convenience From<Vec<(&str, ScalarValue)>>
         let constructed = ScalarValue::from(vec![

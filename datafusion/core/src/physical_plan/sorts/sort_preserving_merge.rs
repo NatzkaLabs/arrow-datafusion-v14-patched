@@ -160,8 +160,7 @@ impl ExecutionPlan for SortPreservingMergeExec {
         );
         if 0 != partition {
             return Err(DataFusionError::Internal(format!(
-                "SortPreservingMergeExec invalid partition {}",
-                partition
+                "SortPreservingMergeExec invalid partition {partition}"
             )));
         }
 
@@ -955,8 +954,7 @@ mod tests {
 
         assert_eq!(
             basic, partition,
-            "basic:\n\n{}\n\npartition:\n\n{}\n\n",
-            basic, partition
+            "basic:\n\n{basic}\n\npartition:\n\n{partition}\n\n"
         );
     }
 
@@ -1231,8 +1229,7 @@ mod tests {
 
         assert_eq!(
             basic, partition,
-            "basic:\n\n{}\n\npartition:\n\n{}\n\n",
-            basic, partition
+            "basic:\n\n{basic}\n\npartition:\n\n{partition}\n\n"
         );
     }
 

@@ -105,7 +105,7 @@ impl ListingTableConfig {
     }
 
     fn infer_format(path: &str) -> Result<(Arc<dyn FileFormat>, String)> {
-        let err_msg = format!("Unable to infer file type from path: {}", path);
+        let err_msg = format!("Unable to infer file type from path: {path}");
 
         let mut exts = path.rsplit('.');
 
@@ -737,7 +737,7 @@ mod tests {
         name: &str,
     ) -> Result<Arc<dyn TableProvider>> {
         let testdata = crate::test_util::parquet_test_data();
-        let filename = format!("{}/{}", testdata, name);
+        let filename = format!("{testdata}/{name}");
         let table_path = ListingTableUrl::parse(filename).unwrap();
 
         let config = ListingTableConfig::new(table_path)

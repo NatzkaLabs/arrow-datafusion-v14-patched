@@ -128,9 +128,7 @@ pub fn build_checked_file_list(dir: &str, ext: &str) -> Result<Vec<String>> {
     build_file_list_recurse(dir, &mut filenames, ext)?;
     if filenames.is_empty() {
         return Err(DataFusionError::Plan(format!(
-            "No files found at {path} with file extension {file_extension}",
-            path = dir,
-            file_extension = ext
+            "No files found at {dir} with file extension {ext}",
         )));
     }
     Ok(filenames)
@@ -328,8 +326,8 @@ mod tests {
                 RecordBatch::try_new(
                     Arc::clone(&schema),
                     vec![
-                        Arc::new(Float32Array::from_slice(&vec![i as f32; batch_size])),
-                        Arc::new(Float64Array::from_slice(&vec![i as f64; batch_size])),
+                        Arc::new(Float32Array::from_slice(vec![i as f32; batch_size])),
+                        Arc::new(Float64Array::from_slice(vec![i as f64; batch_size])),
                     ],
                 )
                 .unwrap()
@@ -420,8 +418,7 @@ impl IPCWriter {
     pub fn new(path: &Path, schema: &Schema) -> Result<Self> {
         let file = File::create(path).map_err(|e| {
             DataFusionError::Execution(format!(
-                "Failed to create partition file at {:?}: {:?}",
-                path, e
+                "Failed to create partition file at {path:?}: {e:?}"
             ))
         })?;
         Ok(Self {
