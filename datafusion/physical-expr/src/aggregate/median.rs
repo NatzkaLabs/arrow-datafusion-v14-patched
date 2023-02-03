@@ -226,7 +226,7 @@ mod test {
         let b = combine_arrays::<Int32Type>(&[a.clone(), a])?;
         assert_eq!(
             "PrimitiveArray<Int32>\n[\n  1,\n  2,\n  3,\n  1,\n  2,\n  3,\n]",
-            format!("{:?}", b)
+            format!("{b:?}")
         );
         Ok(())
     }
@@ -237,7 +237,7 @@ mod test {
         let b = combine_arrays::<UInt32Type>(&[a.clone(), a])?;
         assert_eq!(
             "PrimitiveArray<UInt32>\n[\n  1,\n  2,\n  3,\n  1,\n  2,\n  3,\n]",
-            format!("{:?}", b)
+            format!("{b:?}")
         );
         Ok(())
     }

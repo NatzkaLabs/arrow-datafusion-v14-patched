@@ -174,9 +174,8 @@ impl DFSchema {
                     Some(qualifier) => {
                         if (qualifier.to_owned() + "." + self.fields[i].name()) == name {
                             return Err(DataFusionError::Plan(format!(
-                                "Fully qualified field name '{}' was supplied to `index_of` \
-                                which is deprecated. Please use `index_of_column_by_name` instead",
-                                name
+                                "Fully qualified field name '{name}' was supplied to `index_of` \
+                                which is deprecated. Please use `index_of_column_by_name` instead"
                             )));
                         }
                     }
@@ -616,7 +615,7 @@ mod tests {
         let err = schema.index_of_column_by_name(None, "t1.c0").err().unwrap();
         assert_eq!(
             "Schema error: No field named 't1.c0'. Valid fields are 't1'.'c0', 't1'.'c1'.",
-            &format!("{}", err)
+            &format!("{err}")
         );
         Ok(())
     }

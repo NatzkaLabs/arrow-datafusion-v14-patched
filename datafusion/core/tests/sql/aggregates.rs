@@ -428,7 +428,7 @@ async fn median_test(
     let schema = Arc::new(Schema::new(vec![Field::new("a", data_type, false)]));
     let batch = RecordBatch::try_new(schema.clone(), vec![values])?;
     ctx.register_batch("t", batch)?;
-    let sql = format!("SELECT {}(a) FROM t", func);
+    let sql = format!("SELECT {func}(a) FROM t");
     let actual = execute(&ctx, &sql).await;
     let expected = vec![vec![expected.to_owned()]];
     assert_float_eq(&expected, &actual);
@@ -2184,7 +2184,7 @@ async fn run_count_distinct_integers_aggregated_scenario(
     ]));
 
     for (i, partition) in partitions.iter().enumerate() {
-        let filename = format!("partition-{}.csv", i);
+        let filename = format!("partition-{i}.csv");
         let file_path = tmp_dir.path().join(&filename);
         let mut file = File::create(file_path)?;
         for row in partition {

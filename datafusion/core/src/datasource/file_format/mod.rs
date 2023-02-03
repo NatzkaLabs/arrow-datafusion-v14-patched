@@ -98,7 +98,7 @@ pub(crate) mod test_util {
         limit: Option<usize>,
     ) -> Result<Arc<dyn ExecutionPlan>> {
         let store = Arc::new(LocalFileSystem::new()) as _;
-        let meta = local_unpartitioned_file(format!("{}/{}", store_root, file_name));
+        let meta = local_unpartitioned_file(format!("{store_root}/{file_name}"));
 
         let file_schema = format.infer_schema(&store, &[meta.clone()]).await?;
 

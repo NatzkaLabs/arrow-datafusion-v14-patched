@@ -168,7 +168,7 @@ mod tests {
         let optimized_plan = rule
             .optimize(&plan, &mut OptimizerConfig::new())
             .expect("failed to optimize plan");
-        let formatted_plan = format!("{:?}", optimized_plan);
+        let formatted_plan = format!("{optimized_plan:?}");
         let expected = "\
         Filter: x.a = Int32(1)\
         \n  Projection: y.a, alias=x\
