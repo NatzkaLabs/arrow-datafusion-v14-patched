@@ -2707,7 +2707,8 @@ mod tests {
                     )));
                 }
                 Err(DataFusionError::Internal(err)) => {
-                    if err != format!(
+                    if err
+                        != format!(
                         "Builtin scalar function {fun} does not support empty arguments"
                     ) {
                         return Err(DataFusionError::Internal(format!(
